@@ -45,7 +45,7 @@ namespace magrit
     public:
 
       /**
-       * Gets the status according to the given git log arguments.
+       * Gets the build status according to the given git log arguments.
        * The result is piped to the given function.
        */
       void get_status

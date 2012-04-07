@@ -22,33 +22,100 @@
 #include "build_send.hpp"
 /////////////////////////////////////////////////////////////////////////
 
-magrit::send::send( generic_command* previous_subcommand )
-  : generic_command ( previous_subcommand )
+/////////////////////////////////////////////////////////////////////////
+magrit::build_send::build_send( generic_command* previous_subcommand )
+  : generic_command ( previous_subcommand ), _send_options ( "Send options" )
 {
   namespace bpo = boost::program_options;
 
-  auto options = generic_command::get_options();
-
-  bpo::options_description
-    send_options_desc ( "Send options" );
-
-  send_options_desc.add_options()
+  _send_options.add_options()
     ("--force,f", "<description to be written>")
     ("--command,c", bpo::value<std::string>()->required()
                   , "<description to be written>");
 
-  options.add ( send_options_desc );
+  generic_command::get_options().add ( _send_options );
 }
 
 /////////////////////////////////////////////////////////////////////////
 const char*
-magrit::send::get_name() const
+magrit::build_send::get_name() const
 {
-  return "send"; 
+  if ( _previous_subcommand == nullptr )
+  {
+    return "magrit-build-send";
+  }
+  else
+  {
+    return "send"; 
+  }
 } 
 
 /////////////////////////////////////////////////////////////////////////
-const char* magrit::send::get_description() const
+const char* magrit::build_send::get_description() const
 {
-  return "<description to be written>";
+  return "Sends a commit to be built";
 }
+
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::build_send::process_parsed_options
+(
+  const std::vector<std::string>& arguments,
+  const boost::program_options::variables_map& vm,
+  const std::vector<std::string>& unrecognized_arguments,
+  bool allow_zero_arguments
+)
+const
+{
+  generic_command::process_parsed_options
+    ( arguments, vm, unrecognized_arguments, true );
+
+  send_build
+  (
+    vm.count("force")>0,
+    vm["command"].as<std::string>(),
+    unrecognized_arguments
+  );
+}
+
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::build_send::send_build
+(
+  bool force,
+  const std::string& command,
+  const std::vector < std::string >& rev_args 
+)
+const
+{
+  std::vector < std::string > build_send_command 
+  { 
+    "send-build", force? "--force":"", "--command", command, get_repo_name(), "-"
+  };
+
+	auto print_function =
+    [&] ( const std::string& commit_desc, const std::string& status )
+    {
+      if ( status.find_first_of ( "ssh error" ) != std::string::npos )
+      {
+        throw std::runtime_error ( status );
+      }
+      else if ( status == "0" )
+      {
+        print_status_line ( commit_desc, "Skipped", color );
+      }
+      else
+      {
+        print_status_line ( commit_desc, "Submitted", color );
+      }
+    };
+
+  send_commit_status_command
+  ( 
+    rev_args, 
+    build_send_command,
+    print_function,
+    color
+  );
+}
+

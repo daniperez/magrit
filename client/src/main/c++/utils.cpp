@@ -22,6 +22,7 @@
 #include "utils.hpp"
 /////////////////////////////////////////////////////////////////////////
 // STD
+#include <iomanip>
 #include <stdexcept> 
 #include <string.h>
 #include <iterator>
@@ -40,6 +41,40 @@ static bool git_ok = false;
 std::string clear_color ()
 {
   return std::string ( "\033[0m" ); 
+}
+
+/////////////////////////////////////////////////////////////////////////
+std::string
+colorize_linux ( const std::string& status, bool color )
+{
+  std::stringstream output;
+
+  for ( size_t i = 0 ; i < status.size() ; ++i )
+  {
+    switch ( status[i] )
+    {
+      case 'O':
+        output << cool ( status[i], color );
+        break;
+      case 'E':
+        output << error ( status[i], color );
+        break;
+      case 'R':
+        output << running ( status[i], color );
+        break;
+      case 'P':
+        output << pending ( status[i], color );
+        break;
+      case '?':
+        output << warning ( status[i], color );
+        break;
+      default:
+        output << status[i];
+        break;
+    }
+  }
+
+  return output.str();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -442,6 +477,83 @@ boost::process::pipeline_entry magrit::create_pipeline_member
       workaround_args,
       context
     );
+}
+
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::print_status_line
+  ( const std::string& desc, const std::string& status, bool color )
+{
+  auto msg_width
+    = color? magrit::get_message_max_width () + 8
+           : magrit::get_message_max_width();
+
+  std::cout 
+    << std::left << std::setw ( msg_width )
+    << magrit::cut_message ( desc, msg_width ) << " | "
+    << colorize_linux ( status , color )
+    << std::endl;
+
+}
+
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::send_commit_status_command
+(
+  const std::vector < std::string >& git_rev_args,
+  const std::vector < std::string >& magrit_command,
+  std::function
+    <void (const std::string& commit_desc,const std::string& status)> func,
+  bool color
+)
+{
+  std::vector < boost::process::pipeline_entry > pipeline;
+
+  pipeline.push_back ( get_commits_pipeline ( git_rev_args ) );
+  
+  std::vector < std::string > full_ssh_arguments 
+  {
+    "-x", "-p",
+    boost::lexical_cast<std::string> ( get_magrit_port() ),
+    get_magrit_connection_info(),
+    "magrit"
+  };
+
+  full_ssh_arguments.insert
+    ( full_ssh_arguments.end(), magrit_command.begin(), magrit_command.end() );
+
+  pipeline.push_back
+  ( 
+    magrit::create_pipeline_member
+    (
+      "ssh", full_ssh_arguments,
+      bp_close(), bp_capture(), bp_inherit()
+    )
+  );
+
+  boost::process::children statuses = start_pipeline ( pipeline );
+
+  // We issue again a git log. For every line, we print the status
+  // previously fetched from server. Note: it's theoretically possible
+  // that the previous git log had less lines than the following one if
+  // a commit was pushed in between, but in practice the odds are very low
+  // and the impact is very small.
+  magrit::start_git_process
+  (
+    std::vector < std::string >
+    {
+      "log", color?"--color=always":"--color=never", "--oneline", "-z",
+      join ( " ", git_rev_args.begin(), git_rev_args.end() )
+    },
+    bp_inherit(), bp_capture(), bp_inherit(),
+    [&]( const std::string& line )
+    { 
+      std::string status;
+      std::getline( statuses.back().get_stdout(), status );
+      func ( line, status );
+    },
+    true
+  );
 }
 
 /////////////////////////////////////////////////////////////////////////

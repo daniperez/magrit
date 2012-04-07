@@ -26,19 +26,49 @@
 
 namespace magrit 
 {
-  struct send : public generic_command
+  class build_send : public generic_command
   {
-    send ( generic_command* previous_subcommand );
+    public:
 
-    /**
-     * @see generic_command::get_name
-     */
-    const char* get_name() const override;
+      build_send ( generic_command* previous_subcommand );
 
-    /**
-     * @see generic_command::get_description
-     */
-    const char* get_description() const override;
+      /**
+       * @see generic_command::get_name
+       */
+      const char* get_name() const override;
+
+      /**
+       * @see generic_command::get_description
+       */
+      const char* get_description() const override;
+
+      /**
+       * Sends the commits describeds by rev_args.
+       */ 
+      void
+      send_build
+      (
+        bool force,
+        const std::string& command,
+        const std::vector < std::string >& rev_args 
+      )
+      const;
+
+    protected:
+
+      void
+      process_parsed_options
+      (
+        const std::vector<std::string>& arguments,
+        const boost::program_options::variables_map& vm,
+        const std::vector<std::string>& unrecognized_arguments,
+        bool allow_zero_arguments
+      )
+      const;
+
+    protected:
+
+      boost::program_options::options_description _send_options;
   };
 }
 #endif

@@ -399,5 +399,32 @@ namespace magrit
    */
   std::vector<std::string> get_commits
     ( const std::vector<std::string>& git_args );
+
+  /**
+   * Prints a status line. desc is the left-hand side and status
+   * is the right-hand side (separated by "|").
+   *
+   * If color=true, the output is colored.
+   */
+  void
+  print_status_line
+    ( const std::string& desc, const std::string& status, bool color );
+
+  /**
+   * Sends magrit_command to server and pipes in the commits
+   * specified by git_rev_args. For each commit_desc and status pair retrieved
+   * from server, it will apply func.
+   *
+   * magrit_command is the command after 'magrit' keyword.
+   */
+  void
+  send_commit_status_command
+  (
+    const std::vector < std::string >& git_rev_args,
+    const std::vector < std::string >& magrit_command,
+    std::function
+      <void (const std::string& commit_desc,const std::string& status)> func,
+    bool color
+  );
 }
 #endif
