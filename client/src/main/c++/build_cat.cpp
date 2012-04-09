@@ -23,39 +23,84 @@
 /////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////
-magrit::cat::cat ( generic_command* previous_subcommand )
-  : generic_command ( previous_subcommand ),
-    _positional_parameters_desc
-    ("Positional options (can be added to the end of argument list without the dashed string)")
+magrit::build_cat::build_cat ( generic_command* previous_subcommand )
+  : generic_command ( previous_subcommand )
 {
-  /*
-  TODO: implement get_positional_options
-  _positional_parameters.add("revstr", 1);
-
-  _positional_parameters_desc.add_options()
-    ("revstr", boost::program_options::value<std::string>(),
-     "revision to show");
-
-  get_options().add ( _positional_parameters_desc );
-  */
 }
 
 /////////////////////////////////////////////////////////////////////////
 const char*
-magrit::cat::get_name() const
+magrit::build_cat::get_name() const
 {
-  return "cat"; 
+  if ( _previous_subcommand == nullptr )
+  {
+    return "magrit-cat-build";
+  }
+  else
+  {
+    return "cat"; 
+  }
 } 
 
 /////////////////////////////////////////////////////////////////////////
-const char* magrit::cat::get_description() const
+const char* magrit::build_cat::get_description() const
 {
   return "<to be written>";
 }
 
 /////////////////////////////////////////////////////////////////////////
-const boost::program_options::positional_options_description&
-magrit::cat::get_positional_options () const
+void
+magrit::build_cat::process_parsed_options
+(
+  const std::vector<std::string>& arguments,
+  const boost::program_options::variables_map& vm,
+  const std::vector<std::string>& unrecognized_arguments,
+  bool allow_zero_arguments
+)
+const
 {
-  return _positional_parameters;
+  std::string output;
+
+  magrit::start_git_process
+  (
+    std::vector < std::string >
+    {
+      "rev-parse", "--verify",
+      unrecognized_arguments.size() > 0 ?
+      join
+      (
+        " ",
+        unrecognized_arguments.begin(),
+        unrecognized_arguments.end()
+      )
+      :
+      "HEAD"
+    },
+    boost::process::close_stream(),
+    boost::process::capture_stream(),
+    boost::process::inherit_stream(),
+    [&output] ( const std::string& line )
+    {
+      output = line;
+    },
+    true
+  );
+
+  magrit::start_ssh_process
+  (
+    get_magrit_port(),
+    get_magrit_connection_info(),
+    std::vector < std::string >
+    {
+      "magrit", "cat-build", get_repo_name(), output
+    },
+    boost::process::close_stream(),
+    boost::process::silence_stream(),
+    boost::process::inherit_stream(),
+    [] ( const std::string& line )
+    {
+      std::cout << line << std::endl;
+    }
+  );
 }
+

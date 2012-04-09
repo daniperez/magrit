@@ -23,6 +23,8 @@
 #include "build_log.hpp"
 #elif MAGRIT_BUILD_SEND
 #include "build_send.hpp"
+#elif MAGRIT_BUILD_CAT
+#include "build_cat.hpp"
 #elif MAGRIT_WAIT
 #include "wait.hpp"
 #else
@@ -41,6 +43,8 @@ int main ( int argc, char** argv )
   magrit::log ma ( nullptr );
   #elif MAGRIT_BUILD_SEND
   magrit::build_send ma ( nullptr );
+  #elif MAGRIT_BUILD_CAT
+  magrit::build_cat ma ( nullptr );
   #elif MAGRIT_WAIT
   magrit::wait ma ( nullptr );
   #else

@@ -416,6 +416,40 @@ int magrit::start_process
 }
 
 /////////////////////////////////////////////////////////////////////////
+int magrit::start_ssh_process
+(
+  int port,
+  const std::string& conn_info,
+  const std::vector< std::string >& arguments,
+  boost::process::stream_behavior _stdin,
+  boost::process::stream_behavior _stdout,
+  boost::process::stream_behavior _stderr,
+  std::function<void (std::string&)> line_processor,
+  bool _throw
+)
+{
+
+  return
+    start_process
+    (
+      "ssh",
+      std::vector < std::string >
+      {
+        "-x",
+        "-p",
+        boost::lexical_cast < std::string > ( port ),
+        conn_info,
+        join ( " ", arguments.begin(), arguments.end() )
+      },
+      _stdin,
+      _stdout,
+      _stderr,
+      line_processor,
+      _throw
+    );
+}
+
+/////////////////////////////////////////////////////////////////////////
 boost::process::children magrit::start_pipeline
 (
   const std::vector < boost::process::pipeline_entry >& pipeline
@@ -511,22 +545,19 @@ magrit::send_commit_status_command
 
   pipeline.push_back ( get_commits_pipeline ( git_rev_args ) );
   
-  std::vector < std::string > full_ssh_arguments 
-  {
-    "-x", "-p",
-    boost::lexical_cast<std::string> ( get_magrit_port() ),
-    get_magrit_connection_info(),
-    "magrit"
-  };
-
-  full_ssh_arguments.insert
-    ( full_ssh_arguments.end(), magrit_command.begin(), magrit_command.end() );
-
   pipeline.push_back
   ( 
     magrit::create_pipeline_member
     (
-      "ssh", full_ssh_arguments,
+      "ssh",
+      std::vector < std::string >
+      {
+        "-x", "-p",
+        boost::lexical_cast<std::string> ( get_magrit_port() ),
+        get_magrit_connection_info(),
+        "magrit",
+        join ( " ", magrit_command.begin(), magrit_command.end() )
+      },
       bp_close(), bp_capture(), bp_inherit()
     )
   );

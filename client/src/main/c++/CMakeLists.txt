@@ -73,7 +73,7 @@ include_directories ( ${Boost_INCLUDE_DIRS} )
 # -------------------------------------------------------------------
 #  `---> libmagrit.so / magrit.dll
 # -------------------------------------------------------------------
-set ( lib_SOURCES generic_command.cpp utils.cpp build_log.cpp build_send.cpp wait.cpp )
+set ( lib_SOURCES generic_command.cpp utils.cpp build_log.cpp build_send.cpp build_cat.cpp wait.cpp )
 add_library ( magritlib SHARED ${lib_SOURCES} )
 target_link_libraries ( magritlib ${Boost_LIBRARIES} )
 set_target_properties ( magritlib PROPERTIES 
@@ -98,6 +98,12 @@ set_target_properties ( magrit-wait-for PROPERTIES COMPILE_DEFINITIONS "MAGRIT_W
 add_executable ( magrit-send-build main.cpp )
 target_link_libraries ( magrit-send-build magritlib )
 set_target_properties ( magrit-send-build PROPERTIES COMPILE_DEFINITIONS "MAGRIT_BUILD_SEND" )
+# -------------------------------------------------------------------
+#  `---> magrit-cat-build
+# -------------------------------------------------------------------
+add_executable ( magrit-cat-build main.cpp )
+target_link_libraries ( magrit-cat-build magritlib )
+set_target_properties ( magrit-cat-build PROPERTIES COMPILE_DEFINITIONS "MAGRIT_BUILD_CAT" )
 # -------------------------------------------------------------------
 #  `---> tests 
 # -------------------------------------------------------------------

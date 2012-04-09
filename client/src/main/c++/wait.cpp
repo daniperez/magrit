@@ -168,15 +168,12 @@ magrit::wait::wait_for
       << " " << join ( "\n ", sha1s.begin(), sha1s.end() ) << std::endl;
   }
 
-  start_process
+  start_ssh_process
   (
-    "ssh",
+    get_magrit_port(),
+    get_magrit_connection_info(),
     std::vector < std::string >
     {
-      "-x",
-      "-p",
-      boost::lexical_cast < std::string > ( get_magrit_port() ),
-      get_magrit_connection_info(),
       "--raw",
       "magrit",
       "wait-for",

@@ -113,9 +113,9 @@ magrit::generic_command::run_impl
         (
           std::string("command '") +
           get_name() +
-          std::string("' doesn't accept subcommand '") +
+          "' doesn't accept subcommand '" +
           *subcommand_str +
-          std::string("'")
+          "'"
         );
       }
     }

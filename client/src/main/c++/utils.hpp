@@ -341,6 +341,21 @@ namespace magrit
   );
 
   /**
+   * @see start_process. For ssh commands.
+   */
+  int start_ssh_process
+  (
+    int port,
+    const std::string& conn_info,
+    const std::vector< std::string >& arguments,
+    boost::process::stream_behavior _stdin,
+    boost::process::stream_behavior _stdout,
+    boost::process::stream_behavior _stderr,
+    std::function<void (std::string&)> line_processor,
+    bool _throw = true
+  );
+
+  /**
    * Launches the given pipeline.
    */
   boost::process::children start_pipeline
@@ -361,7 +376,8 @@ namespace magrit
 
   /**
    * Equals to start_process but implies launching a git process.
-   * Prettifies the potential errors.
+   * Prettifies the potential errors. Returns the process
+   * status code.
    */
   int start_git_process
   (

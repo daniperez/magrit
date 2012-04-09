@@ -125,7 +125,7 @@ const
 
     print_date();
 
-    wait::wait_for ( "SEP", 0, sha1s, true );
+    magrit::wait::wait_for ( "SEP", 0, sha1s, true );
     
     move_up_linux ( sha1s.size() + 1 );
   }

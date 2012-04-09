@@ -26,11 +26,11 @@
 
 namespace magrit
 {
-  class cat : public generic_command
+  class build_cat : public generic_command
   {
     public:
 
-      cat ( generic_command* previous_subcommand );
+      build_cat ( generic_command* previous_subcommand );
 
       /**
        * @see generic_command::get_name
@@ -42,18 +42,17 @@ namespace magrit
        */
       const char* get_description() const override;
 
-      /**
-       * @see generic_command::get_positional_options
-       */
-      const boost::program_options::positional_options_description&
-      get_positional_options () const override;
+    protected:
 
-    private:
-
-      boost::program_options::positional_options_description
-                                                  _positional_parameters;
-
-      boost::program_options::options_description _positional_parameters_desc;
+      void
+      process_parsed_options
+      (
+        const std::vector<std::string>& arguments,
+        const boost::program_options::variables_map& vm,
+        const std::vector<std::string>& unrecognized_arguments,
+        bool allow_zero_arguments
+      )
+      const;
   };
 }
 #endif
