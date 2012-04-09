@@ -73,7 +73,12 @@ include_directories ( ${Boost_INCLUDE_DIRS} )
 # -------------------------------------------------------------------
 #  `---> libmagrit.so / magrit.dll
 # -------------------------------------------------------------------
-set ( lib_SOURCES generic_command.cpp utils.cpp build_log.cpp build_send.cpp build_cat.cpp wait.cpp )
+set ( lib_SOURCES
+      generic_command.cpp utils.cpp
+      build_log.cpp build_send.cpp build_cat.cpp
+      wait.cpp
+      config.cpp config_add.cpp config_use.cpp config_remove.cpp
+    )
 add_library ( magritlib SHARED ${lib_SOURCES} )
 target_link_libraries ( magritlib ${Boost_LIBRARIES} )
 set_target_properties ( magritlib PROPERTIES 

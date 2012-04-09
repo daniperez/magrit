@@ -32,7 +32,7 @@ magrit::build_cat::build_cat ( generic_command* previous_subcommand )
 const char*
 magrit::build_cat::get_name() const
 {
-  if ( _previous_subcommand == nullptr )
+  if ( is_executable() )
   {
     return "magrit-cat-build";
   }

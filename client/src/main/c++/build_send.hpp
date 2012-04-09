@@ -64,7 +64,7 @@ namespace magrit
         const std::vector<std::string>& unrecognized_arguments,
         bool allow_zero_arguments
       )
-      const;
+      const override;
 
     protected:
 

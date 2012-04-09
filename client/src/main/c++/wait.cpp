@@ -46,7 +46,7 @@ magrit::wait::wait ( generic_command* previous_subcommand )
 const char*
 magrit::wait::get_name() const
 {
-  if ( _previous_subcommand == nullptr )
+  if ( is_executable() )
   {
     return "magrit-wait-for";
   }

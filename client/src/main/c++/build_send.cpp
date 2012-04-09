@@ -40,7 +40,7 @@ magrit::build_send::build_send( generic_command* previous_subcommand )
 const char*
 magrit::build_send::get_name() const
 {
-  if ( _previous_subcommand == nullptr )
+  if ( is_executable() )
   {
     return "magrit-build-send";
   }

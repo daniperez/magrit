@@ -337,8 +337,6 @@ void magrit::generic_command::print_help () const
 /////////////////////////////////////////////////////////////////////////
 void magrit::generic_command::print_help_command () const
 {
-
-
   if ( _previous_subcommand != nullptr )
   {
     _previous_subcommand->print_help_command();

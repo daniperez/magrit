@@ -21,33 +21,42 @@
 // MAGRIT 
 #include "config_add.hpp"
 /////////////////////////////////////////////////////////////////////////
+// STD 
+#include <stdlib.h>
+/////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////
 magrit::config_add::config_add ( generic_command* previous_subcommand )
   : generic_command ( previous_subcommand ),
-     _positional_parameters_desc
-    ("Positional options (can be added to the end of argument list without the dashed string)")
+     _config_add_options ( "Config add options:" ),
+     _config_add_pos_options
+    ("Positional options:)")
 
 {
-  get_options().add_options()
+  _config_add_options.add_options ()
   ( 
     "alias",
-    boost::program_options::value<std::string>()->default_value("magrit"),
+    boost::program_options::value<std::string>()
+      ->required()
+      ->default_value("magrit"),
     "name to identify the config"
   );
-  
-  _positional_parameters.add("address", 1);
-  _positional_parameters.add("name", 1);
 
-  _positional_parameters_desc.add_options()
-    ("address",
-       boost::program_options::value<std::string>()
-         ->default_value("localhost:2022"),
-       "host:port where magrit listens to")
-    ("name", boost::program_options::value<std::string>(),
-     "repository name");
+  _config_add_pos_options.add_options ()
+  (
+    "host",
+    boost::program_options::value<std::string>()
+      ->default_value("localhost:2022"),
+      "host:port where magrit listens to (positional option #1)"
+  )
+  (
+    "name",
+    boost::program_options::value<std::string>(),
+    "repository name (positional option #2)"
+  );
 
-  get_options().add ( _positional_parameters_desc );
+  generic_command::get_options().add ( _config_add_options );
+  generic_command::get_options().add ( _config_add_pos_options );
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -60,15 +69,75 @@ magrit::config_add::get_name() const
 /////////////////////////////////////////////////////////////////////////
 const char* magrit::config_add::get_description() const
 {
-  return "Adds a new repository";
+  return "Creates a new magrit configuration";
 }
 
 /////////////////////////////////////////////////////////////////////////
-const boost::program_options::positional_options_description&
-magrit::config_add::get_positional_options () const override
+void
+magrit::config_add::process_parsed_options
+(
+  const std::vector<std::string>& arguments,
+  const boost::program_options::variables_map& vm,
+  const std::vector<std::string>& unrecognized_arguments,
+  bool allow_zero_arguments
+)
+const
 {
-  return _positional_parameters;
+  generic_command::process_parsed_options
+    ( arguments, vm, unrecognized_arguments, true );
+
+  std::string alias = "magrit";
+
+  if ( vm.count("alias") > 0 )
+  {
+    alias = vm["alias"].as<std::string>();
+  }
+
+  if ( unrecognized_arguments.size() < 2 )
+  {
+    throw missing_option
+    ( "config add needs 2 positional parameters: host repo_name" );
+  }
+  else if ( unrecognized_arguments.size() > 2 )
+  {
+    throw option_not_recognized
+    ( 
+      std::string ("config add only accepts 2 parameters: host repo_name. ") +
+      "'" + unrecognized_arguments[2] + "' not recognized."
+    );
+  }
+  else
+  {
+    add_config ( alias, unrecognized_arguments[0], unrecognized_arguments[1] ); 
+  }
 }
 
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::config_add::add_config
+(
+  const std::string& alias,
+  const std::string& host,
+  const std::string& project_name
+)
+{
+ const char* user = getenv("LOGNAME");
 
+ if ( user == nullptr )
+ {
+   throw std::runtime_error ( "$LOGNAME variable not defined" );
+ }
 
+ std::string url
+  = std::string("ssh://") + user + "@" + host + "/" + project_name;
+
+ start_git_process
+ (
+   std::vector< std::string > { "remote", "add", alias, url },
+   bp_close(),
+   bp_silent(),
+   bp_inherit(),
+   [&] ( const std::string& line ){},
+   true 
+ );
+}

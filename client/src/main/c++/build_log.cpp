@@ -63,7 +63,7 @@ magrit::log::log ( generic_command* previous_subcommand )
 const char*
 magrit::log::get_name() const
 {
-  if ( _previous_subcommand == nullptr )
+  if ( is_executable() )
   {
     return "magrit-build-log";
   }

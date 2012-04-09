@@ -38,13 +38,20 @@ magrit::config::config ( generic_command* previous_subcommand )
 const char*
 magrit::config::get_name() const
 {
-  return "config"; 
+  if ( is_executable() )
+  {
+    return "magrit-config";
+  }
+  else
+  {
+    return "config"; 
+  }
 } 
 
 /////////////////////////////////////////////////////////////////////////
 const char* magrit::config::get_description() const
 {
-  return "<description to be written>";
+  return "Manages magrit's configuration";
 }
 
 

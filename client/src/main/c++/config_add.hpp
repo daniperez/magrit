@@ -42,20 +42,36 @@ namespace magrit
        */
       const char* get_description() const override;
 
+      /**
+       * Adds a new config for the given host and 
+       * project_name with the given alias.
+       */
+      static void add_config
+      (
+        const std::string& alias,
+        const std::string& host,
+        const std::string& project_name
+      );
+
     protected:
 
       /**
-       * @see generic_command::get_positional_options
+       * @see generic_command::process_parsed_options
        */
-      const boost::program_options::positional_options_description&
-      get_positional_options () const override;
+      void
+      process_parsed_options
+      (
+        const std::vector<std::string>& arguments,
+        const boost::program_options::variables_map& vm,
+        const std::vector<std::string>& unrecognized_arguments,
+        bool allow_zero_arguments
+      )
+      const override;
 
     private:
 
-      boost::program_options::positional_options_description
-                                                  _positional_parameters;
-
-      boost::program_options::options_description _positional_parameters_desc;
+      boost::program_options::options_description _config_add_options;
+      boost::program_options::options_description _config_add_pos_options;
 
   };
 }

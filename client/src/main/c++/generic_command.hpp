@@ -181,6 +181,15 @@ namespace magrit
        */
       virtual void print_help () const;
 
+      /**
+       * Tells if the command is being called as an isolated executable
+       * (e.g. magrit-wait-for for 'magrit wait' command).
+       */
+      bool is_executable () const
+      {
+        return _previous_subcommand == nullptr;
+      }
+
     private:
 
       /**
