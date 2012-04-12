@@ -26,20 +26,42 @@
 
 namespace magrit
 {
-  struct share : public generic_command
+  class share : public generic_command
   {
-    share ( generic_command* previous_subcommand )
-      : generic_command ( previous_subcommand ) {}
+    public:
 
-    /**
-     * @see generic_command::get_name
-     */
-    const char* get_name() const override;
+      share ( generic_command* previous_subcommand )
+        : generic_command ( previous_subcommand ) {}
 
-    /**
-     * @see generic_command::get_description
-     */
-    const char* get_description() const override;
+      /**
+       * @see generic_command::get_name
+       */
+      const char* get_name() const override;
+
+      /**
+       * @see generic_command::get_description
+       */
+      const char* get_description() const override;
+
+      /**
+       * Shares the commits specified by rev. 
+       */
+      static void share_impl ( const std::string& rev );
+
+    protected:
+
+      /**
+       * @see generic_command::process_parsed_options
+       */
+      void
+      process_parsed_options
+      (
+        const std::vector<std::string>& arguments,
+        const boost::program_options::variables_map& vm,
+        const std::vector<std::string>& unrecognized_arguments,
+        bool allow_zero_arguments
+      )
+      const override;
   };
 }
 #endif

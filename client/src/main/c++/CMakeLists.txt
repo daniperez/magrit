@@ -80,6 +80,7 @@ set ( lib_SOURCES
       config.cpp config_add.cpp config_use.cpp config_remove.cpp
       monitor.cpp
       status.cpp
+      share.cpp
     )
 add_library ( magritlib SHARED ${lib_SOURCES} )
 target_link_libraries ( magritlib ${Boost_LIBRARIES} )
@@ -87,42 +88,17 @@ set_target_properties ( magritlib PROPERTIES
                         OUTPUT_NAME magrit 
                         # VERSION ${magrit_FULL_VERSION} 
                       )
-# -------------------------------------------------------------------
-#  `---> magrit-build-log
-# -------------------------------------------------------------------
-add_executable ( magrit-build-log main.cpp )
-target_link_libraries ( magrit-build-log magritlib )
-set_target_properties ( magrit-build-log PROPERTIES COMPILE_DEFINITIONS "MAGRIT_BUILD_LOG" )
-# -------------------------------------------------------------------
-#  `---> magrit-wait-for
-# -------------------------------------------------------------------
-add_executable ( magrit-wait-for main.cpp )
-target_link_libraries ( magrit-wait-for magritlib )
-set_target_properties ( magrit-wait-for PROPERTIES COMPILE_DEFINITIONS "MAGRIT_WAIT" )
-# -------------------------------------------------------------------
-#  `---> magrit-send-build
-# -------------------------------------------------------------------
-add_executable ( magrit-send-build main.cpp )
-target_link_libraries ( magrit-send-build magritlib )
-set_target_properties ( magrit-send-build PROPERTIES COMPILE_DEFINITIONS "MAGRIT_BUILD_SEND" )
-# -------------------------------------------------------------------
-#  `---> magrit-cat-build
-# -------------------------------------------------------------------
-add_executable ( magrit-cat-build main.cpp )
-target_link_libraries ( magrit-cat-build magritlib )
-set_target_properties ( magrit-cat-build PROPERTIES COMPILE_DEFINITIONS "MAGRIT_BUILD_CAT" )
-# -------------------------------------------------------------------
-#  `---> magrit-monitor
-# -------------------------------------------------------------------
-add_executable ( magrit-monitor main.cpp )
-target_link_libraries ( magrit-monitor magritlib )
-set_target_properties ( magrit-monitor PROPERTIES COMPILE_DEFINITIONS "MAGRIT_MONITOR" )
-# -------------------------------------------------------------------
-#  `---> magrit-status
-# -------------------------------------------------------------------
-add_executable ( magrit-status main.cpp )
-target_link_libraries ( magrit-status magritlib )
-set_target_properties ( magrit-status PROPERTIES COMPILE_DEFINITIONS "MAGRIT_STATUS" )
+
+# We create a command-line app for each command.
+foreach ( CMD "build-log" "wait-for" "send-build" "cat-build" "monitor" "status" "share" )
+  string ( REPLACE "-" "_" CMD_PREPROC_SYMBOL ${CMD} )
+  string ( TOUPPER ${CMD_PREPROC_SYMBOL} CMD_PREPROC_SYMBOL ) 
+
+  add_executable ( magrit-${CMD} main.cpp )
+  target_link_libraries ( magrit-${CMD} magritlib )
+  set_target_properties ( magrit-${CMD} PROPERTIES COMPILE_DEFINITIONS MAGRIT_${CMD_PREPROC_SYMBOL} )
+endforeach ()
+
 # -------------------------------------------------------------------
 #  `---> tests 
 # -------------------------------------------------------------------

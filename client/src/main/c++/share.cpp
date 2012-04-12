@@ -26,16 +26,53 @@
 const char*
 magrit::share::get_name() const
 {
-  return "share"; 
+  if ( is_executable() )
+  {
+    return "magrit-share";
+  }
+  else
+  {
+    return "share"; 
+  }
 } 
 
 /////////////////////////////////////////////////////////////////////////
 const char* magrit::share::get_description() const
 {
-  return "<description to be written>";
+  return "Sends to magrit server all the commits";
 }
 
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::share::process_parsed_options
+(
+  const std::vector<std::string>& arguments,
+  const boost::program_options::variables_map& vm,
+  const std::vector<std::string>& unrecognized_arguments,
+  bool allow_zero_arguments
+)
+const
+{
+  generic_command::process_parsed_options
+    ( arguments, vm, unrecognized_arguments, true );
 
+  std::string rev = "HEAD";
 
+  if ( unrecognized_arguments.size() > 1 )
+  {
+    throw option_not_recognized
+      ( "share only accepts 1 parameter: commit revision" );
+  }
+  else if ( unrecognized_arguments.size() == 1 )
+  {
+    rev = unrecognized_arguments[0];
+  }
 
+  share_impl ( rev );
+}
 
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::share::share_impl ( const std::string& rev )
+{
+}

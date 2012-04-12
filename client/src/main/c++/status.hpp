@@ -65,7 +65,6 @@ namespace magrit
         bool allow_zero_arguments
       )
       const override;
-
   };
 }
 #endif

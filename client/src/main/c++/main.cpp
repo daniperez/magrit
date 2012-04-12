@@ -21,16 +21,18 @@
 // MAGRIT
 #ifdef MAGRIT_BUILD_LOG
 #include "build_log.hpp"
-#elif MAGRIT_BUILD_SEND
+#elif MAGRIT_SEND_BUILD
 #include "build_send.hpp"
-#elif MAGRIT_BUILD_CAT
+#elif MAGRIT_CAT_BUILD
 #include "build_cat.hpp"
-#elif MAGRIT_WAIT
+#elif MAGRIT_WAIT_FOR
 #include "wait.hpp"
 #elif MAGRIT_MONITOR
 #include "monitor.hpp"
 #elif MAGRIT_STATUS
 #include "status.hpp"
+#elif MAGRIT_SHARE
+#include "share.hpp"
 #else
 #include "magrit.hpp"
 #endif
@@ -45,16 +47,18 @@ int main ( int argc, char** argv )
 
   #ifdef MAGRIT_BUILD_LOG
   magrit::log ma ( nullptr );
-  #elif MAGRIT_BUILD_SEND
+  #elif MAGRIT_SEND_BUILD
   magrit::build_send ma ( nullptr );
-  #elif MAGRIT_BUILD_CAT
+  #elif MAGRIT_CAT_BUILD
   magrit::build_cat ma ( nullptr );
-  #elif MAGRIT_WAIT
+  #elif MAGRIT_WAIT_FOR
   magrit::wait ma ( nullptr );
   #elif MAGRIT_MONITOR
   magrit::monitor ma ( nullptr );
   #elif MAGRIT_STATUS
   magrit::status ma ( nullptr );
+  #elif MAGRIT_SHARE
+  magrit::share ma ( nullptr );
   #else
   magrit::magrit ma;
   #endif

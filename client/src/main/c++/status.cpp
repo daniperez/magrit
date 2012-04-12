@@ -56,13 +56,19 @@ const
   generic_command::process_parsed_options
     ( arguments, vm, unrecognized_arguments, true );
 
+  std::string rev = "HEAD";
+
   if ( unrecognized_arguments.size() > 1 )
   {
     throw option_not_recognized
       ( "status only accepts 1 parameter: commit revision" );
   }
+  else if ( unrecognized_arguments.size() == 1 )
+  {
+    rev = unrecognized_arguments[0];
+  }
 
-  print_status ( unrecognized_arguments[0], color );
+  print_status ( rev, color );
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -77,6 +83,7 @@ magrit::status::print_status ( const std::string& rev, bool color )
   auto print_function = 
     [] ( const std::string& commit_desc, const std::string& status )
     {
+      //#error This is not implemented
       /*
       echo "# $(git log --color=$_colorAction -1 --oneline $commit)"
       echo "$(_colorizeStatus $status)"*
