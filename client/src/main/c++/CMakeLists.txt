@@ -78,6 +78,7 @@ set ( lib_SOURCES
       build_log.cpp build_send.cpp build_cat.cpp
       wait.cpp
       config.cpp config_add.cpp config_use.cpp config_remove.cpp
+      monitor.cpp
     )
 add_library ( magritlib SHARED ${lib_SOURCES} )
 target_link_libraries ( magritlib ${Boost_LIBRARIES} )
@@ -109,6 +110,12 @@ set_target_properties ( magrit-send-build PROPERTIES COMPILE_DEFINITIONS "MAGRIT
 add_executable ( magrit-cat-build main.cpp )
 target_link_libraries ( magrit-cat-build magritlib )
 set_target_properties ( magrit-cat-build PROPERTIES COMPILE_DEFINITIONS "MAGRIT_BUILD_CAT" )
+# -------------------------------------------------------------------
+#  `---> magrit-monitor
+# -------------------------------------------------------------------
+add_executable ( magrit-monitor main.cpp )
+target_link_libraries ( magrit-monitor magritlib )
+set_target_properties ( magrit-monitor PROPERTIES COMPILE_DEFINITIONS "MAGRIT_MONITOR" )
 # -------------------------------------------------------------------
 #  `---> tests 
 # -------------------------------------------------------------------

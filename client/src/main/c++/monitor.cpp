@@ -26,7 +26,14 @@
 const char*
 magrit::monitor::get_name() const
 {
-  return "monitor"; 
+  if ( is_executable() )
+  {
+    return "magrit-monitor";
+  }
+  else
+  {
+    return "monitor"; 
+  }
 } 
 
 /////////////////////////////////////////////////////////////////////////
@@ -35,6 +42,40 @@ const char* magrit::monitor::get_description() const
   return "<description to be written>";
 }
 
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::monitor::process_parsed_options
+(
+  const std::vector<std::string>& arguments,
+  const boost::program_options::variables_map& vm,
+  const std::vector<std::string>& unrecognized_arguments,
+  bool allow_zero_arguments
+)
+const
+{
+  if ( arguments.size() != 0 )
+  {
+    throw magrit::option_not_recognized ( "monitor doesn't accept any options" );
+  }
 
+  do_monitor ( get_magrit_port(), get_magrit_connection_info() );
+}
 
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::monitor::do_monitor 
+  ( int magrit_port, const std::string& magrit_conn_str )
+{
+  start_ssh_process
+  (
+    magrit_port,
+    magrit_conn_str,
+    std::vector < std::string > { "magrit", "monitor" },
+    bp_close(),
+    bp_inherit(),
+    bp_inherit(),
+    [](const std::string& line){},
+    true 
+  );
+}
 

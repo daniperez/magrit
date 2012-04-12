@@ -27,6 +27,8 @@
 #include "build_cat.hpp"
 #elif MAGRIT_WAIT
 #include "wait.hpp"
+#elif MAGRIT_MONITOR
+#include "monitor.hpp"
 #else
 #include "magrit.hpp"
 #endif
@@ -47,6 +49,8 @@ int main ( int argc, char** argv )
   magrit::build_cat ma ( nullptr );
   #elif MAGRIT_WAIT
   magrit::wait ma ( nullptr );
+  #elif MAGRIT_MONITOR
+  magrit::monitor ma ( nullptr );
   #else
   magrit::magrit ma;
   #endif

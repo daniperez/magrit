@@ -26,20 +26,44 @@
 
 namespace magrit
 {
-  struct monitor : public generic_command
+  class monitor : public generic_command
   {
-    monitor ( generic_command* previous_subcommand )
-      : generic_command ( previous_subcommand ) {}
+    public:
 
-    /**
-     * @see generic_command::get_name
-     */
-    const char* get_name() const override;
+      monitor ( generic_command* previous_subcommand )
+        : generic_command ( previous_subcommand ) {}
 
-    /**
-     * @see generic_command::get_description
-     */
-    const char* get_description() const override;
+      /**
+       * @see generic_command::get_name
+       */
+      const char* get_name() const override;
+
+      /**
+       * @see generic_command::get_description
+       */
+      const char* get_description() const override;
+
+      /**
+       * Starts monitor command in the given server.
+       */
+      static 
+      void do_monitor 
+        ( int magrit_port, const std::string& magrit_conn_str );
+
+    protected:
+
+      /**
+       * @see generic_command::process_parsed_options
+       */
+      void
+      process_parsed_options
+      (
+        const std::vector<std::string>& arguments,
+        const boost::program_options::variables_map& vm,
+        const std::vector<std::string>& unrecognized_arguments,
+        bool allow_zero_arguments
+      )
+      const override;
   };
 }
 #endif
