@@ -24,8 +24,19 @@
 
 /////////////////////////////////////////////////////////////////////////
 magrit::config_remove::config_remove ( generic_command* previous_subcommand )
-  : generic_command ( previous_subcommand )
+  : generic_command ( previous_subcommand ),
+     _config_remove_pos_options
+    ("Positional options:")
+
 {
+  _config_remove_pos_options.add_options ()
+  (
+    "alias",
+    boost::program_options::value<std::string>(),
+      "Configuration to remove"
+  );
+
+  generic_command::get_options().add ( _config_remove_pos_options );
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -38,11 +49,48 @@ magrit::config_remove::get_name() const
 /////////////////////////////////////////////////////////////////////////
 const char* magrit::config_remove::get_description() const
 {
-  return "Removes an existing repository from magrit's config";
+  return "Removes a magrit configuration";
 }
 
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::config_remove::process_parsed_options
+(
+  const std::vector<std::string>& arguments,
+  const boost::program_options::variables_map& vm,
+  const std::vector<std::string>& unrecognized_arguments,
+  bool allow_zero_arguments
+)
+const
+{
+  generic_command::process_parsed_options
+    ( arguments, vm, unrecognized_arguments, true );
 
+  if ( unrecognized_arguments.size() != 1 )
+  {
+    throw missing_option
+    ( "config rm needs 1 positional parameters: alias" );
+  }
+  else
+  {
+    remove_config ( unrecognized_arguments[0] ); 
+  }
+}
 
-
-
-
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::config_remove::remove_config
+(
+  const std::string& alias
+)
+{
+ start_git_process
+ (
+   std::vector< std::string > { "remote", "rm", alias },
+   bp_close(),
+   bp_silent(),
+   bp_inherit(),
+   [&] ( const std::string& line ){},
+   true 
+ );
+}
