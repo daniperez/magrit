@@ -588,6 +588,65 @@ magrit::send_commit_status_command
 }
 
 /////////////////////////////////////////////////////////////////////////
+void
+magrit::send_status_command
+(
+  const std::vector < std::string >& git_rev_args,
+  const std::vector < std::string >& magrit_command,
+  std::function
+    <void (const std::string& commit_desc,const std::string& status)> func,
+  bool color
+)
+{
+  /*
+  std::vector < boost::process::pipeline_entry > pipeline;
+
+  pipeline.push_back ( get_commits_pipeline ( git_rev_args ) );
+  
+  pipeline.push_back
+  ( 
+    magrit::create_pipeline_member
+    (
+      "ssh",
+      std::vector < std::string >
+      {
+        "-x", "-p",
+        boost::lexical_cast<std::string> ( get_magrit_port() ),
+        get_magrit_connection_info(),
+        "magrit",
+        join ( " ", magrit_command.begin(), magrit_command.end() )
+      },
+      bp_close(), bp_capture(), bp_inherit()
+    )
+  );
+
+  boost::process::children statuses = start_pipeline ( pipeline );
+
+  // We issue again a git log. For every line, we print the status
+  // previously fetched from server. Note: it's theoretically possible
+  // that the previous git log had less lines than the following one if
+  // a commit was pushed in between, but in practice the odds are very low
+  // and the impact is very small.
+  magrit::start_git_process
+  (
+    std::vector < std::string >
+    {
+      "log", color?"--color=always":"--color=never", "--oneline", "-z",
+      join ( " ", git_rev_args.begin(), git_rev_args.end() )
+    },
+    bp_inherit(), bp_capture(), bp_inherit(),
+    [&]( const std::string& line )
+    { 
+      std::string status;
+      std::getline( statuses.back().get_stdout(), status );
+      func ( line, status );
+    },
+    true
+  );
+  */
+}
+
+/////////////////////////////////////////////////////////////////////////
 boost::process::pipeline_entry magrit::get_commits_pipeline
   ( const std::vector< std::string >& git_args )
 {

@@ -29,6 +29,8 @@
 #include "wait.hpp"
 #elif MAGRIT_MONITOR
 #include "monitor.hpp"
+#elif MAGRIT_STATUS
+#include "status.hpp"
 #else
 #include "magrit.hpp"
 #endif
@@ -51,6 +53,8 @@ int main ( int argc, char** argv )
   magrit::wait ma ( nullptr );
   #elif MAGRIT_MONITOR
   magrit::monitor ma ( nullptr );
+  #elif MAGRIT_STATUS
+  magrit::status ma ( nullptr );
   #else
   magrit::magrit ma;
   #endif

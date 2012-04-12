@@ -26,21 +26,46 @@
 
 namespace magrit
 {
-  struct status : public generic_command
+  /**
+   * TODO: isn't this the same as magrit-log?
+   */
+  class status : public generic_command
   {
+    public:
 
-    status ( generic_command* previous_subcommand )
-      : generic_command ( previous_subcommand ) {}
+      status ( generic_command* previous_subcommand )
+        : generic_command ( previous_subcommand ) {}
 
-    /**
-     * @see generic_command::get_name
-     */
-    const char* get_name() const override;
+      /**
+       * @see generic_command::get_name
+       */
+      const char* get_name() const override;
 
-    /**
-     * @see generic_command::get_description
-     */
-    const char* get_description() const override;
+      /**
+       * @see generic_command::get_description
+       */
+      const char* get_description() const override;
+
+      /**
+       * Prints the status of the given commit rev. argument.
+       */
+      static void print_status ( const std::string& rev, bool color );
+
+    protected:
+
+      /**
+       * @see generic_command::process_parsed_options
+       */
+      void
+      process_parsed_options
+      (
+        const std::vector<std::string>& arguments,
+        const boost::program_options::variables_map& vm,
+        const std::vector<std::string>& unrecognized_arguments,
+        bool allow_zero_arguments
+      )
+      const override;
+
   };
 }
 #endif

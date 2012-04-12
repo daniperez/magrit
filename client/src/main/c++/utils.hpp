@@ -442,5 +442,23 @@ namespace magrit
       <void (const std::string& commit_desc,const std::string& status)> func,
     bool color
   );
+
+  /**
+   * Sends magrit_command to server but, opposite to send_commit_status_command,
+   * the commits are no piped in but passed as paremeter of the command.
+   * For each commit_desc and status pair retrieved from server, it will apply
+   * func.
+   *
+   * magrit_command is the command after 'magrit' keyword.
+   */
+  void
+  send_status_command
+  (
+    const std::vector < std::string >& git_rev_args,
+    const std::vector < std::string >& magrit_command,
+    std::function
+      <void (const std::string& commit_desc,const std::string& status)> func,
+    bool color
+  );
 }
 #endif

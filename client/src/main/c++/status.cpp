@@ -26,7 +26,14 @@
 const char*
 magrit::status::get_name() const
 {
-  return "status"; 
+  if ( is_executable() )
+  {
+    return "magrit-status";
+  }
+  else
+  {
+    return "status"; 
+  }
 } 
 
 /////////////////////////////////////////////////////////////////////////
@@ -35,7 +42,55 @@ const char* magrit::status::get_description() const
   return "<description to be written>";
 }
 
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::status::process_parsed_options
+(
+  const std::vector<std::string>& arguments,
+  const boost::program_options::variables_map& vm,
+  const std::vector<std::string>& unrecognized_arguments,
+  bool allow_zero_arguments
+)
+const
+{
+  generic_command::process_parsed_options
+    ( arguments, vm, unrecognized_arguments, true );
 
+  if ( unrecognized_arguments.size() > 1 )
+  {
+    throw option_not_recognized
+      ( "status only accepts 1 parameter: commit revision" );
+  }
+
+  print_status ( unrecognized_arguments[0], color );
+}
+
+/////////////////////////////////////////////////////////////////////////
+void
+magrit::status::print_status ( const std::string& rev, bool color )
+{
+  std::vector < std::string > status_command 
+  {
+    "status", get_repo_name(), rev 
+  };
+
+  auto print_function = 
+    [] ( const std::string& commit_desc, const std::string& status )
+    {
+      /*
+      echo "# $(git log --color=$_colorAction -1 --oneline $commit)"
+      echo "$(_colorizeStatus $status)"*
+      */
+    };
+
+  send_status_command
+  ( 
+    std::vector < std::string > { rev }, 
+    status_command,
+    print_function,
+    color
+  );
+}
 
 
 
