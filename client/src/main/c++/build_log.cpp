@@ -145,7 +145,7 @@ magrit::log::get_status
     "status", get_repo_name(), "-"
   };
 
-  magrit::send_commit_status_command
+  magrit::send_status_command
   (
     rev_args, 
     build_status_command,

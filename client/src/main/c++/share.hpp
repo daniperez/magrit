@@ -46,7 +46,7 @@ namespace magrit
       /**
        * Shares the commits specified by rev. 
        */
-      static void share_impl ( const std::string& rev );
+      static void share_impl ( const std::string& rev, bool color );
 
     protected:
 

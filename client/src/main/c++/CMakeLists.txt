@@ -1,5 +1,29 @@
 cmake_minimum_required ( VERSION 2.6 )
 # -------------------------------------------------------------------
+# Function 'add_ctags'
+# -------------------------------------------------------------------
+macro (
+            ## Function name 
+            add_ctags
+            ## Argument list
+            target         # Target to depend on
+        )
+
+  set_source_files_properties( tags PROPERTIES GENERATED true)
+
+  add_custom_command (
+      OUTPUT tags
+      COMMAND ctags -R --c++-kinds=+p --fields=+iaS --extra=+q ${CMAKE_SOURCE_DIR}
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      COMMENT "Generating ctags..."
+  )
+
+  add_custom_target ( ctags DEPENDS tags )
+
+  add_dependencies ( ${target} ctags )
+
+endmacro()
+# -------------------------------------------------------------------
 # Function 'add_test_suite'
 # -------------------------------------------------------------------
 function(
@@ -21,7 +45,7 @@ function(
       set_target_properties ( ${name} PROPERTIES SUFFIX "" )
     endif()
 
-endfunction(add_test_suite)
+endfunction()
 # -------------------------------------------------------------------
 # MAIN 
 # -------------------------------------------------------------------
@@ -88,6 +112,8 @@ set_target_properties ( magritlib PROPERTIES
                         OUTPUT_NAME magrit 
                         # VERSION ${magrit_FULL_VERSION} 
                       )
+
+add_ctags ( magritlib )
 
 # We create a command-line app for each command.
 foreach ( CMD "build-log" "wait-for" "send-build" "cat-build" "monitor" "status" "share" )

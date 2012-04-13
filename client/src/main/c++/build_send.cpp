@@ -73,8 +73,9 @@ const
   send_build
   (
     vm.count("force")>0,
-    vm["command"].as<std::string>(),
-    unrecognized_arguments
+    vm.count("command")?vm["command"].as<std::string>():"",
+    unrecognized_arguments,
+    color
   );
 }
 
@@ -84,9 +85,9 @@ magrit::build_send::send_build
 (
   bool force,
   const std::string& command,
-  const std::vector < std::string >& rev_args 
+  const std::vector < std::string >& rev_args,
+  bool color 
 )
-const
 {
   std::vector < std::string > build_send_command 
   { 
@@ -110,7 +111,7 @@ const
       }
     };
 
-  send_commit_status_command
+  send_status_command
   ( 
     rev_args, 
     build_send_command,

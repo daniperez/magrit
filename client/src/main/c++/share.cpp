@@ -20,6 +20,7 @@
 /////////////////////////////////////////////////////////////////////////
 // MAGRIT 
 #include "share.hpp"
+#include "build_send.hpp"
 /////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////
@@ -68,11 +69,30 @@ const
     rev = unrecognized_arguments[0];
   }
 
-  share_impl ( rev );
+  share_impl ( rev, color );
 }
 
 /////////////////////////////////////////////////////////////////////////
 void
-magrit::share::share_impl ( const std::string& rev )
+magrit::share::share_impl ( const std::string& rev, bool color )
 {
+  std::string sha1 
+    = start_git_rev_parse_process ( std::vector < std::string > { rev } );
+
+  start_git_process
+  ( 
+    std::vector < std::string > 
+    {
+      "push",
+      "--force",
+      get_repo_remote_name(),
+      sha1
+    },
+    bp_close(), bp_inherit(), bp_inherit(),
+    [] ( const std::string& line ) {},
+    true
+  );
+
+  magrit::build_send::send_build
+    ( false, "", std::vector < std::string > { rev }, color); 
 }

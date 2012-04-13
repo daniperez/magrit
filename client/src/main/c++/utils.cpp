@@ -532,7 +532,7 @@ magrit::print_status_line
 
 /////////////////////////////////////////////////////////////////////////
 void
-magrit::send_commit_status_command
+magrit::send_status_command
 (
   const std::vector < std::string >& git_rev_args,
   const std::vector < std::string >& magrit_command,
@@ -589,7 +589,7 @@ magrit::send_commit_status_command
 
 /////////////////////////////////////////////////////////////////////////
 void
-magrit::send_status_command
+magrit::send_status_command_explicit_args
 (
   const std::vector < std::string >& git_rev_args,
   const std::vector < std::string >& magrit_command,
@@ -598,52 +598,26 @@ magrit::send_status_command
   bool color
 )
 {
-  /*
-  std::vector < boost::process::pipeline_entry > pipeline;
+  std::vector < std::string > sha1s = get_commits ( git_rev_args );
 
-  pipeline.push_back ( get_commits_pipeline ( git_rev_args ) );
-  
-  pipeline.push_back
-  ( 
-    magrit::create_pipeline_member
-    (
-      "ssh",
-      std::vector < std::string >
-      {
-        "-x", "-p",
-        boost::lexical_cast<std::string> ( get_magrit_port() ),
-        get_magrit_connection_info(),
-        "magrit",
-        join ( " ", magrit_command.begin(), magrit_command.end() )
-      },
-      bp_close(), bp_capture(), bp_inherit()
-    )
-  );
+  auto sha1s_it = sha1s.begin();
 
-  boost::process::children statuses = start_pipeline ( pipeline );
-
-  // We issue again a git log. For every line, we print the status
-  // previously fetched from server. Note: it's theoretically possible
-  // that the previous git log had less lines than the following one if
-  // a commit was pushed in between, but in practice the odds are very low
-  // and the impact is very small.
-  magrit::start_git_process
+  start_ssh_process
   (
+    get_magrit_port(),
+    get_magrit_connection_info(),
     std::vector < std::string >
     {
-      "log", color?"--color=always":"--color=never", "--oneline", "-z",
-      join ( " ", git_rev_args.begin(), git_rev_args.end() )
+      join ( " ", magrit_command.begin(), magrit_command.end() ),
+      " ",
+      join ( " ", sha1s.begin(), sha1s.end() ),
     },
-    bp_inherit(), bp_capture(), bp_inherit(),
-    [&]( const std::string& line )
-    { 
-      std::string status;
-      std::getline( statuses.back().get_stdout(), status );
-      func ( line, status );
-    },
-    true
+    bp_close(), bp_inherit(), bp_inherit(),
+    [&sha1s_it,&func] ( const std::string& line )
+    {
+      func ( *(sha1s_it++), line );
+    }
   );
-  */
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -728,6 +702,35 @@ void magrit::check_git_sanity ()
       return;
     }
   }
+}
+
+/////////////////////////////////////////////////////////////////////////
+std::string magrit::start_git_rev_parse_process
+  ( const std::vector< std::string >& arguments )
+{
+
+  std::vector < std::string > all_arguments
+  {
+    "rev-parse",
+    "--verify",
+    join ( " ", arguments.begin(), arguments.end() )
+  };
+
+  std::string sha1;
+ 
+  start_process
+  (
+    "git",
+    arguments,
+    bp_close(), bp_capture(), bp_inherit(),
+    [&sha1] ( const std::string& line ) 
+    {
+      sha1 = line;
+    },
+    true
+  );
+
+  return sha1;
 }
 
 /////////////////////////////////////////////////////////////////////////

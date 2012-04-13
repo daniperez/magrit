@@ -1,6 +1,7 @@
 .project
 .settings
 target
+tags
 
 client/target
 client/src/main/c++/build

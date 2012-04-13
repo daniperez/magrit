@@ -45,14 +45,14 @@ namespace magrit
       /**
        * Sends the commits describeds by rev_args.
        */ 
-      void
+      static void
       send_build
       (
         bool force,
         const std::string& command,
-        const std::vector < std::string >& rev_args 
-      )
-      const;
+        const std::vector < std::string >& rev_args,
+        bool color 
+      );
 
     protected:
 

@@ -341,6 +341,28 @@ namespace magrit
   );
 
   /**
+   * Equals to start_process but implies launching a git process.
+   * Prettifies the potential errors. Returns the process
+   * status code.
+   */
+  int start_git_process
+  (
+    const std::vector< std::string >& arguments,
+    boost::process::stream_behavior _stdin,
+    boost::process::stream_behavior _stdout,
+    boost::process::stream_behavior _stderr,
+    std::function<void (std::string&)> line_processor,
+    bool _throw
+  );
+
+  /**
+   * git rev-parse [arguments]. Returns the commit sha1 signature
+   * or throws an error if arguments weren't valid.
+   */
+  std::string start_git_rev_parse_process
+    ( const std::vector< std::string >& arguments );
+
+  /**
    * @see start_process. For ssh commands.
    */
   int start_ssh_process
@@ -372,21 +394,6 @@ namespace magrit
     boost::process::stream_behavior _stdin,
     boost::process::stream_behavior _stdout,
     boost::process::stream_behavior _stderr
-  );
-
-  /**
-   * Equals to start_process but implies launching a git process.
-   * Prettifies the potential errors. Returns the process
-   * status code.
-   */
-  int start_git_process
-  (
-    const std::vector< std::string >& arguments,
-    boost::process::stream_behavior _stdin,
-    boost::process::stream_behavior _stdout,
-    boost::process::stream_behavior _stderr,
-    std::function<void (std::string&)> line_processor,
-    bool _throw
   );
 
   /**
@@ -434,7 +441,7 @@ namespace magrit
    * magrit_command is the command after 'magrit' keyword.
    */
   void
-  send_commit_status_command
+  send_status_command
   (
     const std::vector < std::string >& git_rev_args,
     const std::vector < std::string >& magrit_command,
@@ -452,7 +459,7 @@ namespace magrit
    * magrit_command is the command after 'magrit' keyword.
    */
   void
-  send_status_command
+  send_status_command_explicit_args
   (
     const std::vector < std::string >& git_rev_args,
     const std::vector < std::string >& magrit_command,
