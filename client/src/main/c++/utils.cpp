@@ -486,7 +486,7 @@ boost::process::children magrit::start_pipeline
 }
 
 /////////////////////////////////////////////////////////////////////////
-boost::process::pipeline_entry magrit::create_pipeline_member
+boost::process::pipeline_entry magrit::create_pipeline_entry
 (
   const std::string& program,
   const std::vector< std::string >& arguments,
@@ -543,11 +543,11 @@ magrit::send_status_command
 {
   std::vector < boost::process::pipeline_entry > pipeline;
 
-  pipeline.push_back ( get_commits_pipeline ( git_rev_args ) );
+  pipeline.push_back ( create_get_commits_pipeline_entry ( git_rev_args ) );
   
   pipeline.push_back
   ( 
-    magrit::create_pipeline_member
+    magrit::create_pipeline_entry
     (
       "ssh",
       std::vector < std::string >
@@ -621,19 +621,19 @@ magrit::send_status_command_explicit_args
 }
 
 /////////////////////////////////////////////////////////////////////////
-boost::process::pipeline_entry magrit::get_commits_pipeline
-  ( const std::vector< std::string >& git_args )
+boost::process::pipeline_entry magrit::create_get_commits_pipeline_entry
+  ( const std::vector< std::string >& rev )
 {
 
   std::vector < std::string > git_log_arguments
   {
     "log",
     "--format=%H",
-    join ( " ", git_args.begin(), git_args.end() )
+    join ( " ", rev.begin(), rev.end() )
   };
 
   return
-    create_git_pipeline_member
+    create_git_pipeline_entry
     (
       git_log_arguments,
       boost::process::close_stream(),
@@ -753,7 +753,7 @@ int magrit::start_git_process
 }
 
 /////////////////////////////////////////////////////////////////////////
-boost::process::pipeline_entry magrit::create_git_pipeline_member
+boost::process::pipeline_entry magrit::create_git_pipeline_entry
 (
   const std::vector< std::string >& arguments,
   boost::process::stream_behavior _stdin,
@@ -765,7 +765,7 @@ boost::process::pipeline_entry magrit::create_git_pipeline_member
   check_git_sanity ();
 
   return
-    create_pipeline_member ( "git", arguments, _stdin, _stdout, _stderr );
+    create_pipeline_entry ( "git", arguments, _stdin, _stdout, _stderr );
 }
 
 

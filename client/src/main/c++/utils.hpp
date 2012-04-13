@@ -387,7 +387,7 @@ namespace magrit
   /**
    * Creates a pipeline process with the given arguments. 
    */
-  boost::process::pipeline_entry create_pipeline_member
+  boost::process::pipeline_entry create_pipeline_entry
   (
     const std::string& program,
     const std::vector< std::string >& arguments,
@@ -400,7 +400,7 @@ namespace magrit
    * Equals to create_pipeline_member but implies launching
    * a git process. Prettifies the potential errors.
    */
-  boost::process::pipeline_entry create_git_pipeline_member
+  boost::process::pipeline_entry create_git_pipeline_entry
   (
     const std::vector< std::string >& arguments,
     boost::process::stream_behavior _stdin,
@@ -413,7 +413,7 @@ namespace magrit
    * sha1 signatures with `git log` according to the
    * given arguments.
    */
-  boost::process::pipeline_entry get_commits_pipeline
+  boost::process::pipeline_entry create_get_commits_pipeline_entry
     ( const std::vector< std::string >& arguments );
 
   /**
