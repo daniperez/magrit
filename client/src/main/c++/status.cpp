@@ -81,13 +81,9 @@ magrit::status::print_status ( const std::string& rev, bool color )
   };
 
   auto print_function = 
-    [] ( const std::string& commit_desc, const std::string& status )
+    [color] ( const std::string& commit_desc, const std::string& status )
     {
-      //#error This is not implemented
-      /*
-      echo "# $(git log --color=$_colorAction -1 --oneline $commit)"
-      echo "$(_colorizeStatus $status)"*
-      */
+      print_status_line ( commit_desc, status, color );
     };
 
   send_status_command
