@@ -84,7 +84,7 @@ magrit::config_remove::remove_config
   const std::string& alias
 )
 {
- start_git_process
+ magrit::utils::process::git
  (
    std::vector< std::string > { "remote", "rm", alias },
    bp_close(),

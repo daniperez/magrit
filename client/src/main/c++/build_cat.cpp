@@ -59,44 +59,34 @@ magrit::build_cat::process_parsed_options
 )
 const
 {
-  std::string output;
-
-  magrit::start_git_process
-  (
-    std::vector < std::string >
-    {
-      "rev-parse", "--verify",
-      unrecognized_arguments.size() > 0 ?
-      join
+  std::string sha1
+    = magrit::utils::git::rev_parse
       (
-        " ",
-        unrecognized_arguments.begin(),
-        unrecognized_arguments.end()
-      )
-      :
-      "HEAD"
-    },
-    boost::process::close_stream(),
-    boost::process::capture_stream(),
-    boost::process::inherit_stream(),
-    [&output] ( const std::string& line )
-    {
-      output = line;
-    },
-    true
-  );
+        std::vector < std::string >
+        {
+          unrecognized_arguments.size() > 0 ?
+          magrit::utils::strings::join
+          (
+            " ",
+            unrecognized_arguments.begin(),
+            unrecognized_arguments.end()
+          )
+          :
+          "HEAD"
+        }
+      );
 
-  magrit::start_ssh_process
+  // TODO: replace by send_command_explicit_args (it has to be
+  //       enhanced to verify single commits)
+  magrit::utils::process::ssh
   (
-    get_magrit_port(),
-    get_magrit_connection_info(),
+    magrit::utils::config::get_magrit_port(),
+    magrit::utils::config::get_magrit_connection_info(),
     std::vector < std::string >
     {
-      "magrit", "cat-build", get_repo_name(), output
+      "magrit", "cat-build", magrit::utils::config::get_repo_name(), sha1
     },
-    boost::process::close_stream(),
-    boost::process::silence_stream(),
-    boost::process::inherit_stream(),
+    bp_close(), bp_silent(), bp_inherit(),
     [] ( const std::string& line )
     {
       std::cout << line << std::endl;

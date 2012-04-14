@@ -112,14 +112,15 @@ const
 
   while ( true )
   {
-    auto sha1s = get_commits ( rev_args );
+    auto sha1s = magrit::utils::git::get_commits ( rev_args );
 
     get_status
     (
       rev_args,
       [&] ( const std::string& commit_desc, const std::string& status )
       {
-        print_status_line ( commit_desc, status, color ); 
+        magrit::utils::strings::print_status_line
+          ( commit_desc, status, color ); 
       }
     );
 
@@ -142,10 +143,10 @@ magrit::log::get_status
 {
   std::vector < std::string > build_status_command 
   { 
-    "status", get_repo_name(), "-"
+    "status", magrit::utils::config::get_repo_name(), "-"
   };
 
-  magrit::send_status_command
+  magrit::utils::process::send_command
   (
     rev_args, 
     build_status_command,
@@ -164,7 +165,8 @@ const
     rev_args, 
     [&] ( const std::string& commit_desc, const std::string& status )
     {
-      print_status_line ( commit_desc, status, color );
+      magrit::utils::strings::print_status_line
+        ( commit_desc, status, color );
     }
   );
 }

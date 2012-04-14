@@ -131,7 +131,7 @@ magrit::config_add::add_config
  std::string url
   = std::string("ssh://") + user + "@" + host + "/" + project_name;
 
- start_git_process
+ magrit::utils::process::git
  (
    std::vector< std::string > { "remote", "add", alias, url },
    bp_close(),

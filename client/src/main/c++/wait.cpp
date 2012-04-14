@@ -91,7 +91,8 @@ const
       std::string("Event '") +
       events[events.find_first_not_of ( accepted_events )] +
       std::string("' not recognized. Accepted values are: ") +
-      join (" or ",accepted_events.begin(),accepted_events.end(), true )
+      magrit::utils::strings::join
+        (" or ",accepted_events.begin(),accepted_events.end(), true )
     );
   }
   else if ( events.size() > accepted_events.size() )
@@ -108,12 +109,16 @@ const
     wait_for
     (
       events, timeout,
-      magrit::get_commits ( std::vector<std::string>{ "HEAD" } )
+      magrit::utils::git::get_commits ( std::vector<std::string>{ "HEAD" } )
     );  
   }
   else
   {
-    wait_for ( events, timeout, get_commits ( unrecognized_arguments ) );  
+    wait_for 
+    (
+      events, timeout,
+      magrit::utils::git::get_commits ( unrecognized_arguments )
+    );  
   }
 }
 
@@ -141,13 +146,16 @@ std::string to_textual_events ( const std::string& input )
             std::string("Event '") +
             event +
             std::string("' not recognized. Accepted events: ") +
-            join ( " or ", accepted_events.begin(), accepted_events.end() )
+            magrit::utils::strings::join
+              ( " or ", accepted_events.begin(), accepted_events.end() )
           );
       }
     }
   );
 
-  return join ( " or ", output.begin(), output.end(), true );
+  return
+    magrit::utils::strings::join 
+      ( " or ", output.begin(), output.end(), true );
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -165,13 +173,15 @@ magrit::wait::wait_for
     std::cout
       << "Waiting the following commit(s) " 
       << "build " << to_textual_events ( events ) << ": " << std::endl
-      << " " << join ( "\n ", sha1s.begin(), sha1s.end() ) << std::endl;
+      << " " 
+      << magrit::utils::strings::join ( "\n ", sha1s.begin(), sha1s.end() )
+      << std::endl;
   }
 
-  start_ssh_process
+  magrit::utils::process::ssh
   (
-    get_magrit_port(),
-    get_magrit_connection_info(),
+    magrit::utils::config::get_magrit_port(),
+    magrit::utils::config::get_magrit_connection_info(),
     std::vector < std::string >
     {
       "--raw",
@@ -181,8 +191,8 @@ magrit::wait::wait_for
       "--timeout=" + ( timeout == 0 ? 
                        std::string("-1") :
                        boost::lexical_cast<std::string> ( timeout ) ),
-      get_repo_name(),
-      join ( " ", sha1s.begin(), sha1s.end() )
+      magrit::utils::config::get_repo_name(),
+      magrit::utils::strings::join ( " ", sha1s.begin(), sha1s.end() )
     },
     boost::process::close_stream(),
     boost::process::silence_stream(),

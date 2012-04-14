@@ -77,15 +77,15 @@ void
 magrit::share::share_impl ( const std::string& rev, bool color )
 {
   std::string sha1 
-    = start_git_rev_parse_process ( std::vector < std::string > { rev } );
+    = magrit::utils::git::rev_parse ( std::vector < std::string > { rev } );
 
-  start_git_process
+  magrit::utils::process::git 
   ( 
     std::vector < std::string > 
     {
       "push",
       "--force",
-      get_repo_remote_name(),
+      magrit::utils::config::get_repo_remote_name(),
       sha1
     },
     bp_close(), bp_inherit(), bp_inherit(),

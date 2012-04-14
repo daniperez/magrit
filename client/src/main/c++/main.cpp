@@ -77,17 +77,19 @@ int main ( int argc, char** argv )
   }
   catch ( const magrit::option_not_recognized& e )
   {
-    std::cerr << error ( "Error:", ma.color ) 
+    std::cerr << magrit::utils::color::error ( "Error:", ma.color ) 
               << " unknown option: "
               << e.what() << std::endl;
   }
   catch ( boost::program_options::error& e )
   {
-    std::cerr << error ( "Error: ", ma.color ) << e.what() << std::endl;
+    std::cerr << magrit::utils::color::error ( "Error: ", ma.color ) 
+              << e.what() << std::endl;
   }
   catch ( std::exception& e )
   {
-    std::cerr << error ( "Error: ", ma.color ) << e.what() << std::endl;
+    std::cerr << magrit::utils::color::error ( "Error: ", ma.color )
+              << e.what() << std::endl;
   }
 
   return -1;

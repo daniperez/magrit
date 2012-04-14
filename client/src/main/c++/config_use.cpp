@@ -90,7 +90,7 @@ magrit::config_use::use_config
   const std::string& alias
 )
 {
- start_git_process
+ magrit::utils::process::git
  (
    std::vector< std::string > { "config", "magrit.remote", alias },
    bp_close(),

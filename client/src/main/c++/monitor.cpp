@@ -55,10 +55,14 @@ const
 {
   if ( arguments.size() != 0 )
   {
-    throw magrit::option_not_recognized ( "monitor doesn't accept any options" );
+    throw
+      magrit::option_not_recognized ( "monitor doesn't accept any options" );
   }
 
-  do_monitor ( get_magrit_port(), get_magrit_connection_info() );
+  using namespace magrit::utils;
+
+  do_monitor
+    ( config::get_magrit_port(), config::get_magrit_connection_info() );
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -66,7 +70,9 @@ void
 magrit::monitor::do_monitor 
   ( int magrit_port, const std::string& magrit_conn_str )
 {
-  start_ssh_process
+  // TODO: port and conn_str can be statically retrieved with
+  //       the corresponding methods in magrit::utils::config
+  magrit::utils::process::ssh
   (
     magrit_port,
     magrit_conn_str,

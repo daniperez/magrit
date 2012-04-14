@@ -77,16 +77,16 @@ magrit::status::print_status ( const std::string& rev, bool color )
 {
   std::vector < std::string > status_command 
   {
-    "status", get_repo_name(), rev 
+    "status", magrit::utils::config::get_repo_name(), rev 
   };
 
   auto print_function = 
     [color] ( const std::string& commit_desc, const std::string& status )
     {
-      print_status_line ( commit_desc, status, color );
+      magrit::utils::strings::print_status_line ( commit_desc, status, color );
     };
 
-  send_status_command
+  magrit::utils::process::send_command
   ( 
     std::vector < std::string > { rev }, 
     status_command,

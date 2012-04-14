@@ -38,7 +38,7 @@
 static bool git_ok = false;
 
 /////////////////////////////////////////////////////////////////////////
-std::string clear_color ()
+std::string magrit::utils::color::clear_color ()
 {
   return std::string ( "\033[0m" ); 
 }
@@ -54,19 +54,19 @@ colorize_linux ( const std::string& status, bool color )
     switch ( status[i] )
     {
       case 'O':
-        output << cool ( status[i], color );
+        output << magrit::utils::color::cool ( status[i], color );
         break;
       case 'E':
-        output << error ( status[i], color );
+        output << magrit::utils::color::error ( status[i], color );
         break;
       case 'R':
-        output << running ( status[i], color );
+        output << magrit::utils::color::running ( status[i], color );
         break;
       case 'P':
-        output << pending ( status[i], color );
+        output << magrit::utils::color::pending ( status[i], color );
         break;
       case '?':
-        output << warning ( status[i], color );
+        output << magrit::utils::color::warning ( status[i], color );
         break;
       default:
         output << status[i];
@@ -78,7 +78,8 @@ colorize_linux ( const std::string& status, bool color )
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::vector< std::string > split ( const std::string& input, char delimiter )
+std::vector< std::string > magrit::utils::strings::split
+  ( const std::string& input, char delimiter )
 {
   std::vector< std::string > output;
 
@@ -95,26 +96,12 @@ std::vector< std::string > split ( const std::string& input, char delimiter )
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string sanitize ( const std::string& str )
-{
-  // TODO: implement
-  return str;
-}
-
-/////////////////////////////////////////////////////////////////////////
-std::string sanitize_ssh_cmd ( const std::string& str )
-{
-  // TODO: implement
-  return str;
-}
-
-/////////////////////////////////////////////////////////////////////////
-std::string magrit::read_one_output_line_from_git
+std::string magrit::utils::process::git_single_output_line
 ( const std::vector < std::string >& args, bool _throw )
 {
   std::string output;
 
-  start_git_process
+  magrit::utils::process::git
   (
     args,
     boost::process::inherit_stream(),
@@ -124,16 +111,16 @@ std::string magrit::read_one_output_line_from_git
     _throw
   );
 
-  return sanitize ( output );
+  return output;
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::get_repo_remote_name ()
+std::string magrit::utils::config::get_repo_remote_name ()
 {
   try
   {
     return
-      read_one_output_line_from_git
+      magrit::utils::process::git_single_output_line
       (
         std::vector < std::string > { "config", "--get", "magrit.remote" },
         true
@@ -146,19 +133,19 @@ std::string magrit::get_repo_remote_name ()
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::get_magrit_connection_info ()
+std::string magrit::utils::config::get_magrit_connection_info ()
 {
   return get_magrit_user() + std::string("@") + get_magrit_host();
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::get_magrit_url ()
+std::string magrit::utils::config::get_magrit_url ()
 {
   std::string var
     = std::string ( "remote." ) + get_repo_remote_name () + std::string ( ".url" );
 
   std::string url 
-    = read_one_output_line_from_git
+    = magrit::utils::process::git_single_output_line
       ( 
         std::vector < std::string > 
         { 
@@ -183,7 +170,7 @@ std::string magrit::get_magrit_url ()
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::get_repo_name ()
+std::string magrit::utils::config::get_repo_name ()
 {
   std::string url = get_magrit_url ();
 
@@ -201,9 +188,9 @@ std::string magrit::get_repo_name ()
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::get_magrit_host_impl ( size_t* port )
+std::string get_magrit_host_impl ( size_t* port = nullptr )
 {
-  std::string url = get_magrit_url ();
+  std::string url = magrit::utils::config::get_magrit_url ();
 
   size_t pos_at = url.find_first_of ( '@' );
 
@@ -253,13 +240,13 @@ std::string magrit::get_magrit_host_impl ( size_t* port )
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::get_magrit_host ()
+std::string magrit::utils::config::get_magrit_host ()
 {
   return get_magrit_host_impl ( nullptr );
 }
 
 /////////////////////////////////////////////////////////////////////////
-size_t magrit::get_magrit_port ()
+size_t magrit::utils::config::get_magrit_port ()
 {
   size_t port = 2022;
 
@@ -269,18 +256,18 @@ size_t magrit::get_magrit_port ()
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::get_magrit_user ()
+std::string magrit::utils::config::get_magrit_user ()
 {
-  return sanitize ( "git" );
+  return "git";
 }
 
 /////////////////////////////////////////////////////////////////////////
-int magrit::get_message_max_width ()
+int magrit::utils::config::get_message_max_width ()
 {
   // 60 correspond to the messsage and 9 to the sha1 signature and spaces
   int width = 60 + 9;
 
-  start_git_process
+  magrit::utils::process::git
   (
     std::vector < std::string >
     {
@@ -303,7 +290,7 @@ int magrit::get_message_max_width ()
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::cut_message ( const std::string& msg, size_t width )
+std::string magrit::utils::strings::cut_message ( const std::string& msg, size_t width )
 {
   if ( msg.size() <= width )
   {
@@ -349,7 +336,7 @@ fix_args ( const std::string& program, const std::vector < std::string >& args )
 }
 
 /////////////////////////////////////////////////////////////////////////
-int magrit::start_process
+int magrit::utils::process::start_process
 (
   const std::string& program,
   const std::vector< std::string >& arguments,
@@ -406,7 +393,8 @@ int magrit::start_process
   {
     throw std::runtime_error
     ( 
-      "[" + program +" "+ join (" ",  arguments.begin(), arguments.end()) + "]"
+      "[" + program +" "+
+      magrit::utils::strings::join (" ",  arguments.begin(), arguments.end()) + "]"
       " returned " + boost::lexical_cast < std::string > ( status.exit_status() ) +
       " (" + strerror(errno) + ")"
     );
@@ -416,7 +404,7 @@ int magrit::start_process
 }
 
 /////////////////////////////////////////////////////////////////////////
-int magrit::start_ssh_process
+int magrit::utils::process::ssh
 (
   int port,
   const std::string& conn_info,
@@ -439,7 +427,8 @@ int magrit::start_ssh_process
         "-p",
         boost::lexical_cast < std::string > ( port ),
         conn_info,
-        join ( " ", arguments.begin(), arguments.end() )
+        magrit::utils::strings::join
+          ( " ", arguments.begin(), arguments.end() )
       },
       _stdin,
       _stdout,
@@ -450,7 +439,7 @@ int magrit::start_ssh_process
 }
 
 /////////////////////////////////////////////////////////////////////////
-boost::process::children magrit::start_pipeline
+boost::process::children magrit::utils::process::start_pipeline
 (
   const std::vector < boost::process::pipeline_entry >& pipeline
 )
@@ -470,7 +459,7 @@ boost::process::children magrit::start_pipeline
     {
       pipeline_elem.push_back
       ( 
-        join 
+        magrit::utils::strings::join 
         (
           " ",
           pipeline[i].arguments.begin(),
@@ -486,7 +475,7 @@ boost::process::children magrit::start_pipeline
 }
 
 /////////////////////////////////////////////////////////////////////////
-boost::process::pipeline_entry magrit::create_pipeline_entry
+boost::process::pipeline_entry magrit::utils::process::create_pipeline_entry
 (
   const std::string& program,
   const std::vector< std::string >& arguments,
@@ -515,16 +504,16 @@ boost::process::pipeline_entry magrit::create_pipeline_entry
 
 /////////////////////////////////////////////////////////////////////////
 void
-magrit::print_status_line
+magrit::utils::strings::print_status_line
   ( const std::string& desc, const std::string& status, bool color )
 {
   auto msg_width
-    = color? magrit::get_message_max_width () + 8
-           : magrit::get_message_max_width();
+    = color? magrit::utils::config::get_message_max_width () + 8
+           : magrit::utils::config::get_message_max_width();
 
   std::cout 
     << std::left << std::setw ( msg_width )
-    << magrit::cut_message ( desc, msg_width ) << " | "
+    << magrit::utils::strings::cut_message ( desc, msg_width ) << " | "
     << colorize_linux ( status , color )
     << std::endl;
 
@@ -532,7 +521,7 @@ magrit::print_status_line
 
 /////////////////////////////////////////////////////////////////////////
 void
-magrit::send_status_command
+magrit::utils::process::send_command
 (
   const std::vector < std::string >& git_rev_args,
   const std::vector < std::string >& magrit_command,
@@ -547,16 +536,20 @@ magrit::send_status_command
   
   pipeline.push_back
   ( 
-    magrit::create_pipeline_entry
+    magrit::utils::process::create_pipeline_entry
     (
       "ssh",
       std::vector < std::string >
       {
         "-x", "-p",
-        boost::lexical_cast<std::string> ( get_magrit_port() ),
-        get_magrit_connection_info(),
+        boost::lexical_cast<std::string>
+        ( 
+          magrit::utils::config::get_magrit_port()  
+        ),
+        magrit::utils::config::get_magrit_connection_info(),
         "magrit",
-        join ( " ", magrit_command.begin(), magrit_command.end() )
+        magrit::utils::strings::join 
+          ( " ", magrit_command.begin(), magrit_command.end() )
       },
       bp_close(), bp_capture(), bp_inherit()
     )
@@ -569,12 +562,13 @@ magrit::send_status_command
   // that the previous git log had less lines than the following one if
   // a commit was pushed in between, but in practice the odds are very low
   // and the impact is very small.
-  magrit::start_git_process
+  git
   (
     std::vector < std::string >
     {
       "log", color?"--color=always":"--color=never", "--oneline", "-z",
-      join ( " ", git_rev_args.begin(), git_rev_args.end() )
+      magrit::utils::strings::join
+        ( " ", git_rev_args.begin(), git_rev_args.end() )
     },
     bp_inherit(), bp_capture(), bp_inherit(),
     [&]( const std::string& line )
@@ -589,7 +583,7 @@ magrit::send_status_command
 
 /////////////////////////////////////////////////////////////////////////
 void
-magrit::send_status_command_explicit_args
+magrit::utils::process::send_command_explicit_args
 (
   const std::vector < std::string >& git_rev_args,
   const std::vector < std::string >& magrit_command,
@@ -598,19 +592,22 @@ magrit::send_status_command_explicit_args
   bool color
 )
 {
-  std::vector < std::string > sha1s = get_commits ( git_rev_args );
+  std::vector < std::string > sha1s
+    = magrit::utils::git::get_commits ( git_rev_args );
 
   auto sha1s_it = sha1s.begin();
 
-  start_ssh_process
+  ssh
   (
-    get_magrit_port(),
-    get_magrit_connection_info(),
+    magrit::utils::config::get_magrit_port(),
+    magrit::utils::config::get_magrit_connection_info(),
     std::vector < std::string >
     {
-      join ( " ", magrit_command.begin(), magrit_command.end() ),
+      magrit::utils::strings::join
+        ( " ", magrit_command.begin(), magrit_command.end() ),
       " ",
-      join ( " ", sha1s.begin(), sha1s.end() ),
+      magrit::utils::strings::join
+        ( " ", sha1s.begin(), sha1s.end() ),
     },
     bp_close(), bp_inherit(), bp_inherit(),
     [&sha1s_it,&func] ( const std::string& line )
@@ -621,7 +618,8 @@ magrit::send_status_command_explicit_args
 }
 
 /////////////////////////////////////////////////////////////////////////
-boost::process::pipeline_entry magrit::create_get_commits_pipeline_entry
+boost::process::pipeline_entry
+magrit::utils::process::create_get_commits_pipeline_entry
   ( const std::vector< std::string >& rev )
 {
 
@@ -629,7 +627,7 @@ boost::process::pipeline_entry magrit::create_get_commits_pipeline_entry
   {
     "log",
     "--format=%H",
-    join ( " ", rev.begin(), rev.end() )
+    magrit::utils::strings::join ( " ", rev.begin(), rev.end() )
   };
 
   return
@@ -643,7 +641,7 @@ boost::process::pipeline_entry magrit::create_get_commits_pipeline_entry
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::vector<std::string> magrit::get_commits
+std::vector<std::string> magrit::utils::git::get_commits
   ( const std::vector<std::string>& git_args )
 {
   std::vector<std::string> output;
@@ -652,15 +650,15 @@ std::vector<std::string> magrit::get_commits
   {
     "log",
     "--format=%H",
-    join ( " ", git_args.begin(), git_args.end() )
+    magrit::utils::strings::join ( " ", git_args.begin(), git_args.end() )
   };
 
-  magrit::start_git_process
+  magrit::utils::process::git
   (
     git_log_arguments,
-    boost::process::close_stream(),
-    boost::process::capture_stream(),
-    boost::process::inherit_stream(),
+    bp_close(),
+    bp_capture(),
+    bp_inherit(),
     [&output] ( const std::string& line )
     {
       output.push_back ( line );
@@ -672,7 +670,7 @@ std::vector<std::string> magrit::get_commits
 }
 
 /////////////////////////////////////////////////////////////////////////
-void magrit::check_git_sanity () 
+void magrit::utils::git::check_sanity () 
 {
   if ( !git_ok )
   {
@@ -680,13 +678,13 @@ void magrit::check_git_sanity ()
     // git rev-parse does, that's why we check if we're in a git
     // folder before executing any git command.
     int status
-      = magrit::start_process 
+      = magrit::utils::process::start_process 
         (
           "git",
           std::vector<std::string>{"rev-parse"},
-          boost::process::close_stream(),
-          boost::process::capture_stream(),
-          boost::process::capture_stream(),
+          bp_close(),
+          bp_capture(),
+          bp_capture(),
           [] ( const std::string& line ) {},
           false
         );
@@ -705,7 +703,7 @@ void magrit::check_git_sanity ()
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::string magrit::start_git_rev_parse_process
+std::string magrit::utils::git::rev_parse
   ( const std::vector< std::string >& arguments )
 {
 
@@ -713,28 +711,19 @@ std::string magrit::start_git_rev_parse_process
   {
     "rev-parse",
     "--verify",
-    join ( " ", arguments.begin(), arguments.end() )
+    magrit::utils::strings::join ( " ", arguments.begin(), arguments.end() )
   };
 
-  std::string sha1;
- 
-  start_process
-  (
-    "git",
-    arguments,
-    bp_close(), bp_capture(), bp_inherit(),
-    [&sha1] ( const std::string& line ) 
-    {
-      sha1 = line;
-    },
-    true
-  );
-
-  return sha1;
+  return
+    magrit::utils::process::git_single_output_line
+    ( 
+      all_arguments,
+      true
+    );
 }
 
 /////////////////////////////////////////////////////////////////////////
-int magrit::start_git_process
+int magrit::utils::process::git
 (
   const std::vector< std::string >& arguments,
   boost::process::stream_behavior _stdin,
@@ -745,15 +734,15 @@ int magrit::start_git_process
 )
 {
 
-  check_git_sanity ();
+  magrit::utils::git::check_sanity ();
   
   return
-    start_process
+    magrit::utils::process::start_process
       ( "git", arguments, _stdin, _stdout, _stderr, line_processor, _throw );
 }
 
 /////////////////////////////////////////////////////////////////////////
-boost::process::pipeline_entry magrit::create_git_pipeline_entry
+boost::process::pipeline_entry magrit::utils::process::create_git_pipeline_entry
 (
   const std::vector< std::string >& arguments,
   boost::process::stream_behavior _stdin,
@@ -762,7 +751,7 @@ boost::process::pipeline_entry magrit::create_git_pipeline_entry
 )
 {
 
-  check_git_sanity ();
+  magrit::utils::git::check_sanity ();
 
   return
     create_pipeline_entry ( "git", arguments, _stdin, _stdout, _stderr );

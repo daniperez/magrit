@@ -91,7 +91,8 @@ magrit::build_send::send_build
 {
   std::vector < std::string > build_send_command 
   { 
-    "send-build", force? "--force":"", "--command", command, get_repo_name(), "-"
+    "send-build", force? "--force":"",
+    "--command", command, magrit::utils::config::get_repo_name(), "-"
   };
 
 	auto print_function =
@@ -103,15 +104,17 @@ magrit::build_send::send_build
       }
       else if ( status == "0" )
       {
-        print_status_line ( commit_desc, "Skipped", color );
+        magrit::utils::strings::print_status_line
+          ( commit_desc, "Skipped", color );
       }
       else
       {
-        print_status_line ( commit_desc, "Submitted", color );
+        magrit::utils::strings::print_status_line
+          ( commit_desc, "Submitted", color );
       }
     };
 
-  send_status_command
+  magrit::utils::process::send_command
   ( 
     rev_args, 
     build_send_command,
