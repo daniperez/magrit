@@ -33,6 +33,8 @@
 #include "status.hpp"
 #elif MAGRIT_SHARE
 #include "share.hpp"
+#elif MAGRIT_CONFIG
+#include "config.hpp"
 #else
 #include "magrit.hpp"
 #endif
@@ -59,6 +61,8 @@ int main ( int argc, char** argv )
   magrit::status ma ( nullptr );
   #elif MAGRIT_SHARE
   magrit::share ma ( nullptr );
+  #elif MAGRIT_CONFIG
+  magrit::config ma ( nullptr );
   #else
   magrit::magrit ma;
   #endif

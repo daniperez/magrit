@@ -115,14 +115,16 @@ set_target_properties ( magritlib PROPERTIES
 
 add_ctags ( magritlib )
 
+set ( magrit_COMMANDS "magrit-build-log" "magrit-wait-for" "magrit-send-build" "magrit-cat-build" "magrit-monitor" "magrit-status" "magrit-share" "magrit-config" )
+
 # We create a command-line app for each command.
-foreach ( CMD "build-log" "wait-for" "send-build" "cat-build" "monitor" "status" "share" )
+foreach ( CMD ${magrit_COMMANDS} )
   string ( REPLACE "-" "_" CMD_PREPROC_SYMBOL ${CMD} )
   string ( TOUPPER ${CMD_PREPROC_SYMBOL} CMD_PREPROC_SYMBOL ) 
 
-  add_executable ( magrit-${CMD} main.cpp )
-  target_link_libraries ( magrit-${CMD} magritlib )
-  set_target_properties ( magrit-${CMD} PROPERTIES COMPILE_DEFINITIONS MAGRIT_${CMD_PREPROC_SYMBOL} )
+  add_executable ( ${CMD} main.cpp )
+  target_link_libraries ( ${CMD} magritlib )
+  set_target_properties ( ${CMD} PROPERTIES COMPILE_DEFINITIONS ${CMD_PREPROC_SYMBOL} )
 endforeach ()
 
 # -------------------------------------------------------------------
@@ -150,7 +152,9 @@ add_custom_target(
 # Packaging
 # -------------------------------------------------------------------
 # TODO: allow RPM/DEB installations
-install ( TARGETS magritlib magrit-build-log magrit-wait-for DESTINATION "." COMPONENT maven_install )
+install ( TARGETS
+          magritlib ${magrit_COMMANDS} 
+          DESTINATION "." COMPONENT maven_install )
 # (keep this last)
 include ( CPack )
 
