@@ -402,7 +402,7 @@ namespace magrit
        */
       static int ssh 
       (
-        int port,
+        size_t port,
         const std::string& conn_info,
         const std::vector< std::string >& arguments,
         boost::process::stream_behavior _stdin,

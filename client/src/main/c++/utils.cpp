@@ -406,7 +406,7 @@ int magrit::utils::process::start_process
 /////////////////////////////////////////////////////////////////////////
 int magrit::utils::process::ssh
 (
-  int port,
+  size_t port,
   const std::string& conn_info,
   const std::vector< std::string >& arguments,
   boost::process::stream_behavior _stdin,
