@@ -113,7 +113,8 @@ set_target_properties ( magritlib PROPERTIES
                         # VERSION ${magrit_FULL_VERSION} 
                       )
 
-add_ctags ( magritlib )
+# Not working in ubuntu
+#add_ctags ( magritlib )
 
 set ( magrit_COMMANDS "magrit-build-log" "magrit-wait-for" "magrit-send-build" "magrit-cat-build" "magrit-monitor" "magrit-status" "magrit-share" "magrit-config" )
 
