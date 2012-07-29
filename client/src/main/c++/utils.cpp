@@ -319,10 +319,7 @@ fix_args ( const std::string& program, const std::vector < std::string >& args )
     std::remove_if
     (
       workaround_args.begin(), workaround_args.end(),
-      [] ( const std::string& arg )
-      {
-        return arg.empty();
-      }
+      [] ( const std::string& arg ) { return arg.empty(); }
     ),
     workaround_args.end()
   );
@@ -712,5 +709,4 @@ boost::process::pipeline_entry magrit::utils::process::create_git_pipeline_entry
   return
     create_pipeline_entry ( "git", arguments, _stdin, _stdout, _stderr );
 }
-
 
