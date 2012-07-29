@@ -27,10 +27,10 @@
 
 /////////////////////////////////////////////////////////////////////////
 magrit::config_add::config_add ( generic_command* previous_subcommand )
-  : generic_command ( previous_subcommand ),
-     _config_add_options ( "Config add options:" ),
+  : generic_command ( previous_subcommand, true ),
+     _config_add_options ( "Config add options" ),
      _config_add_pos_options
-    ("Positional options:")
+    ("Positional options (the '--<arg>' part can be omitted)")
 
 {
   _config_add_options.add_options ()

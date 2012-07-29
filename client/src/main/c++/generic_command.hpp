@@ -206,7 +206,7 @@ namespace magrit
        * Removes the given argument from the list of arguments. Returns
        * the result as a new vector.
        */
-      std::vector<std::string> remove_subcommand_first
+      std::vector<std::string> remove_subcommand
         ( const std::vector<std::string>& arguments, const std::string& arg )
       const;
 
@@ -240,6 +240,7 @@ namespace magrit
 
     public:
 
+      bool dryrun;
       bool debug;
       bool color;
 

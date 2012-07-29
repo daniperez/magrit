@@ -52,8 +52,14 @@ magrit::generic_command::generic_command
         ->implicit_value ( true )
         ->default_value ( true ),
       "show debug messages"
+    )
+    (
+      "dryrun,y", 
+      boost::program_options::value<bool>( &dryrun )
+        ->implicit_value ( false )
+        ->default_value ( false ),
+      "doesn't do any action. Prints the command to be sent to server."
     );
-
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -102,7 +108,7 @@ magrit::generic_command::run_impl
       {
         (*subcommand)->run_impl
         ( 
-           remove_subcommand_first ( arguments, *subcommand_str ),
+           remove_subcommand ( arguments, *subcommand_str ),
            vm 
         ); 
       }
@@ -361,7 +367,7 @@ void magrit::generic_command::print_help_subcommands_description () const
 }
 
 /////////////////////////////////////////////////////////////////////////
-std::vector<std::string> magrit::generic_command::remove_subcommand_first
+std::vector<std::string> magrit::generic_command::remove_subcommand
   ( const std::vector<std::string>& arguments, const std::string& arg ) const
 {
   std::vector<std::string> output;

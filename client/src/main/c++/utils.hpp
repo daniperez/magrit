@@ -351,12 +351,20 @@ namespace magrit
         ( const std::vector< std::string >& arguments );
 
       /**
-       * Not pipelined version of create_get_commits_pipeline_entry. 
+       * Not pipelined version of get_commits_pipeline_entry. 
        * Returns the sha1 signatures by using `git log` with the
        * given git_args arguments.
        */
       static std::vector<std::string> get_commits
         ( const std::vector<std::string>& git_args );
+
+      /**
+       * Returns a pipeline process printing to stdout the
+       * sha1 signatures with `git log` according to the
+       * given rev arguments.
+       */
+      static boost::process::pipeline_entry get_commits_pipeline_entry
+        ( const std::vector< std::string >& rev );
     };
 
     struct process
@@ -364,7 +372,7 @@ namespace magrit
       /**
        * Launches the given command line. 
        */
-      static int start_process
+      static int launch
       (
         const std::string& program,
         const std::vector< std::string >& arguments,
@@ -376,7 +384,7 @@ namespace magrit
       );
 
       /**
-       * Equals to start_process but implies launching a git process.
+       * Equals to process::launch but implies launching a git process.
        * Prettifies the potential errors. Returns the process
        * status code.
        */
@@ -398,7 +406,7 @@ namespace magrit
         ( const std::vector < std::string >& args, bool _throw );
 
       /**
-       * @see start_process. For ssh commands.
+       * @see process::launch for ssh commands.
        */
       static int ssh 
       (
@@ -415,7 +423,7 @@ namespace magrit
       /**
        * Launches the given pipeline.
        */
-      static boost::process::children start_pipeline
+      static boost::process::children launch_pipeline
         ( const std::vector < boost::process::pipeline_entry >& pipeline )
         throw ( pipeline_error );
 
@@ -432,7 +440,7 @@ namespace magrit
       );
 
       /**
-       * Equals to create_pipeline_member but implies launching
+       * Equals to create_pipeline_entry but implies launching
        * a git process. Prettifies the potential errors.
        */
       static boost::process::pipeline_entry create_git_pipeline_entry
@@ -442,14 +450,6 @@ namespace magrit
         boost::process::stream_behavior _stdout,
         boost::process::stream_behavior _stderr
       );
-
-      /**
-       * Returns a pipeline process printing to stdout the
-       * sha1 signatures with `git log` according to the
-       * given rev arguments.
-       */
-      static boost::process::pipeline_entry create_get_commits_pipeline_entry
-        ( const std::vector< std::string >& rev );
 
       /**
        * Sends magrit_command to server and pipes in the commits
@@ -469,7 +469,7 @@ namespace magrit
       );
 
       /**
-       * Sends magrit_command to server but, opposite to send_commit_status_command,
+       * Sends magrit_command to server but, opposite to send_command,
        * the commits are no piped in but passed as paremeter of the command after
        * being parsed by git log.
        * For each commit_desc and status pair retrieved from server, it will apply
