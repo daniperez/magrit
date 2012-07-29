@@ -340,6 +340,14 @@ int magrit::utils::process::launch
   bool dryrun
 )
 {
+  if ( dryrun )
+  {
+    std::cout << program << " "
+              << join3 ( " ", arguments.begin(), arguments.end() )
+              << std::endl;
+    return 0;
+  }
+
   boost::process::context context;
 
   context.stdin_behavior = _stdin;
@@ -418,7 +426,7 @@ int magrit::utils::process::ssh
         "-x", "-p", to_string ( port ), conn_info,
         join3 ( " ", arguments.begin(), arguments.end() )
       },
-      _stdin, _stdout, _stderr, line_processor, _throw
+      _stdin, _stdout, _stderr, line_processor, _throw, dryrun
     );
 }
 
@@ -430,6 +438,23 @@ boost::process::children magrit::utils::process::launch_pipeline
 )
   throw ( pipeline_error )
 {
+  if ( dryrun )
+  {
+    namespace bp = boost::process;
+    std::for_each 
+    ( 
+      pipeline.begin(), pipeline.end(),
+      [](bp::pipeline_entry entry)
+      {
+        std::cout
+          << entry.executable << " "
+          << join3 ( " ", entry.arguments.begin(), entry.arguments.end() )
+          << std::endl;
+      }
+    );
+    return bp::children();
+  }
+
   boost::process::children ch 
     = boost::process::launch_pipeline ( pipeline );
 
