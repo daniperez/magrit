@@ -396,7 +396,8 @@ namespace magrit
         boost::process::stream_behavior _stdout,
         boost::process::stream_behavior _stderr,
         std::function<void (std::string&)> line_processor,
-        bool _throw
+        bool _throw,
+        bool dryrun = false
       );
 
       /**

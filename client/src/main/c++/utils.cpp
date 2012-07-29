@@ -688,7 +688,8 @@ int magrit::utils::process::git
   boost::process::stream_behavior _stdout,
   boost::process::stream_behavior _stderr,
   std::function<void (std::string&)> line_processor,
-  bool _throw
+  bool _throw,
+  bool dryrun
 )
 {
 
@@ -696,7 +697,8 @@ int magrit::utils::process::git
   
   return
     utils::process::launch
-      ( "git", arguments, _stdin, _stdout, _stderr, line_processor, _throw );
+      ( "git", arguments, _stdin, _stdout, _stderr,
+        line_processor, _throw, dryrun );
 }
 
 /////////////////////////////////////////////////////////////////////////
