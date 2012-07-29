@@ -134,7 +134,7 @@ endforeach ()
 enable_testing() 
 if ( Boost_FOUND )
 
-    add_test_suite ( TestSuite "tests/UtilsTest.cpp" )
+    add_test_suite ( MainTestSuite "tests/MainTestSuite.cpp" )
 
 endif ()
 
@@ -147,7 +147,7 @@ endforeach ()
 add_custom_target(
               check
               COMMAND env "WINEPATH=\"${WINEPATH}\"" ${CMAKE_CTEST_COMMAND} --output-on-failure
-              DEPENDS TestSuite 
+              DEPENDS MainTestSuite 
              )
 # -------------------------------------------------------------------
 # Packaging

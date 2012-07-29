@@ -26,7 +26,10 @@
 // BOOST
 #include <boost/test/unit_test.hpp>
 #include <boost/test/detail/unit_test_parameters.hpp>
-///////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+// MAGRIT 
+#include "build_cat.hpp"
+/////////////////////////////////////////////////////////////////////////
 
 // This can be set at runtime:
 //
@@ -52,11 +55,22 @@ struct MyConfig
 
 BOOST_GLOBAL_FIXTURE( MyConfig )
 
-BOOST_AUTO_TEST_SUITE( TestSuite )
+BOOST_AUTO_TEST_SUITE( MainTestSuite )
 
 BOOST_AUTO_TEST_CASE( SanityCheck01 )
 {
   BOOST_CHECK( 1 == (2-1) );
+}
+
+BOOST_AUTO_TEST_CASE( CheckBuildCat )
+{
+  magrit::build_cat cmd ( nullptr );
+
+  std::vector<std::string> args;
+
+  cmd.run ( args ); 
+
+  BOOST_CHECK( false );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -128,6 +128,8 @@ namespace magrit
        */
       virtual void run ( const std::vector<std::string>& arguments ) const;
 
+    protected:
+
       /**
        * Implementation of run().
        */
@@ -136,8 +138,6 @@ namespace magrit
         const std::vector<std::string>& arguments,
         boost::program_options::variables_map& vm
       ) const;
-
-    protected:
 
       /**
        * @name You can redefine these methods if you want to do

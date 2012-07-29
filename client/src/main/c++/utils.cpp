@@ -431,6 +431,28 @@ int magrit::utils::process::ssh
 }
 
 /////////////////////////////////////////////////////////////////////////
+std::vector < std::string > get_pipeline_description
+  ( const std::vector < boost::process::pipeline_entry >& pipeline )
+{
+  std::vector < std::string > pipeline_elem;
+
+  std::for_each 
+  ( 
+    pipeline.begin(), pipeline.end(),
+    [&](boost::process::pipeline_entry entry)
+    {
+      pipeline_elem.push_back
+      (
+        entry.executable + std::string(" ") +
+        join3  ( " ", entry.arguments.begin(), entry.arguments.end() )
+      );
+    }
+  );
+
+  return pipeline_elem;
+}
+
+/////////////////////////////////////////////////////////////////////////
 boost::process::children magrit::utils::process::launch_pipeline
 (
   const std::vector < boost::process::pipeline_entry >& pipeline,
@@ -438,21 +460,15 @@ boost::process::children magrit::utils::process::launch_pipeline
 )
   throw ( pipeline_error )
 {
+  auto pipeline_str = get_pipeline_description ( pipeline );
+
   if ( dryrun )
   {
-    namespace bp = boost::process;
-    std::for_each 
-    ( 
-      pipeline.begin(), pipeline.end(),
-      [](bp::pipeline_entry entry)
-      {
-        std::cout
-          << entry.executable << " "
-          << join3 ( " ", entry.arguments.begin(), entry.arguments.end() )
-          << std::endl;
-      }
-    );
-    return bp::children();
+    std::cout 
+      << join3 ( "\n", pipeline_str.begin(), pipeline_str.end() )
+      << std::endl;
+
+    return boost::process::children();
   }
 
   boost::process::children ch 
@@ -463,15 +479,7 @@ boost::process::children magrit::utils::process::launch_pipeline
 
   if ( !exit_status.exited () || exit_status.exit_status() != 0 )
   {
-    std::vector < std::string > pipeline_elem;
-
-    for ( size_t i = 0 ; i < pipeline.size() ; ++i )
-    {
-      auto args = pipeline[i].arguments;
-      pipeline_elem.push_back ( join3 (" ", args.begin(), args.end() ) );
-    }
-
-    throw pipeline_error ( pipeline_elem );
+    throw pipeline_error ( pipeline_str );
   }
 
   return ch; 

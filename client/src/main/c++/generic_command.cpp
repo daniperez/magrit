@@ -71,10 +71,13 @@ magrit::generic_command::run
 
   bpo::variables_map vm;
 
-  const std::vector<std::string>
-    tail_arguments ( ++arguments.begin(), arguments.end() );
+  if ( arguments.size() > 0 )
+  {
+    const std::vector<std::string>
+      tail_arguments ( ++arguments.begin(), arguments.end() );
 
-  run_impl ( tail_arguments, vm );
+    run_impl ( tail_arguments, vm );
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
