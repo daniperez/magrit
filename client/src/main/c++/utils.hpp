@@ -380,7 +380,8 @@ namespace magrit
         boost::process::stream_behavior _stdout,
         boost::process::stream_behavior _stderr,
         std::function<void (std::string&)> line_processor,
-        bool _throw = true
+        bool _throw = true,
+        bool dryrun = false 
       );
 
       /**
@@ -417,14 +418,18 @@ namespace magrit
         boost::process::stream_behavior _stdout,
         boost::process::stream_behavior _stderr,
         std::function<void (std::string&)> line_processor,
-        bool _throw = true
+        bool _throw = true,
+        bool dryrun = false
       );
 
       /**
        * Launches the given pipeline.
        */
       static boost::process::children launch_pipeline
-        ( const std::vector < boost::process::pipeline_entry >& pipeline )
+      (
+        const std::vector < boost::process::pipeline_entry >& pipeline,
+        bool dryrun = false
+      )
         throw ( pipeline_error );
 
       /**
@@ -465,7 +470,8 @@ namespace magrit
         const std::vector < std::string >& magrit_command,
         std::function
           <void (const std::string& commit_desc,const std::string& status)> func,
-        bool color
+        bool color,
+        bool dryrun = false
       );
 
       /**
@@ -484,7 +490,8 @@ namespace magrit
         const std::vector < std::string >& magrit_command,
         std::function
           <void (const std::string& commit_desc,const std::string& status)> func,
-        bool color
+        bool color,
+        bool dryrun = false
       );
     };
   }

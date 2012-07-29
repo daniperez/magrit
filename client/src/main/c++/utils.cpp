@@ -336,7 +336,8 @@ int magrit::utils::process::launch
   boost::process::stream_behavior _stdout,
   boost::process::stream_behavior _stderr,
   std::function<void (std::string&)> line_processor,
-  bool _throw
+  bool _throw,
+  bool dryrun
 )
 {
   boost::process::context context;
@@ -404,7 +405,8 @@ int magrit::utils::process::ssh
   boost::process::stream_behavior _stdout,
   boost::process::stream_behavior _stderr,
   std::function<void (std::string&)> line_processor,
-  bool _throw
+  bool _throw,
+  bool dryrun
 )
 {
   return
@@ -423,7 +425,8 @@ int magrit::utils::process::ssh
 /////////////////////////////////////////////////////////////////////////
 boost::process::children magrit::utils::process::launch_pipeline
 (
-  const std::vector < boost::process::pipeline_entry >& pipeline
+  const std::vector < boost::process::pipeline_entry >& pipeline,
+  bool dryrun
 )
   throw ( pipeline_error )
 {
@@ -502,7 +505,8 @@ magrit::utils::process::send_command
   const std::vector < std::string >& magrit_command,
   std::function
     <void (const std::string& commit_desc,const std::string& status)> func,
-  bool color
+  bool color,
+  bool dryrun
 )
 {
   std::vector < boost::process::pipeline_entry > pipeline;
@@ -557,7 +561,8 @@ magrit::utils::process::send_command_explicit_args
   const std::vector < std::string >& magrit_command,
   std::function
     <void (const std::string& commit_desc,const std::string& status)> func,
-  bool color
+  bool color,
+  bool dryrun
 )
 {
   std::vector < std::string > sha1s
