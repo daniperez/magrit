@@ -37,11 +37,6 @@
 
 namespace magrit
 {
-
-  struct success 
-  {
-  };
-
   struct invalid_argument : public std::runtime_error
   {
     invalid_argument (const std::string& what)

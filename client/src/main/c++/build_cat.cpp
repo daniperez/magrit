@@ -59,6 +59,9 @@ magrit::build_cat::process_parsed_options
 )
 const
 {
+  generic_command::process_parsed_options
+    ( arguments, vm, unrecognized_arguments, true );
+
   std::string sha1
     = magrit::utils::git::rev_parse
       (
@@ -73,7 +76,8 @@ const
           )
           :
           "HEAD"
-        }
+        },
+        dryrun
       );
 
   // TODO: replace by send_command_explicit_args (it has to be
@@ -90,7 +94,9 @@ const
     [] ( const std::string& line )
     {
       std::cout << line << std::endl;
-    }
+    },
+    true,
+    true
   );
 }
 

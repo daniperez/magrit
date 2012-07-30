@@ -348,7 +348,7 @@ namespace magrit
        * or throws an error if arguments weren't valid.
        */
       static std::string rev_parse 
-        ( const std::vector< std::string >& arguments );
+        ( const std::vector< std::string >& arguments, bool dryrun = false );
 
       /**
        * Not pipelined version of get_commits_pipeline_entry. 
@@ -405,7 +405,8 @@ namespace magrit
        * reads a single line of output.
        */
       static std::string git_single_output_line
-        ( const std::vector < std::string >& args, bool _throw );
+        ( const std::vector < std::string >& args,
+          bool _throw = true, bool dryrun = false);
 
       /**
        * @see process::launch for ssh commands.

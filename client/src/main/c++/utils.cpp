@@ -100,7 +100,7 @@ std::vector< std::string > magrit::utils::strings::split
 
 /////////////////////////////////////////////////////////////////////////
 std::string magrit::utils::process::git_single_output_line
-( const std::vector < std::string >& args, bool _throw )
+( const std::vector < std::string >& args, bool _throw, bool dryrun )
 {
   std::string output;
 
@@ -111,7 +111,8 @@ std::string magrit::utils::process::git_single_output_line
     boost::process::capture_stream(),
     boost::process::inherit_stream(),
     [&output]( const std::string& line ) { output = line; },
-    _throw
+    _throw,
+    dryrun
   );
 
   return output;
@@ -122,12 +123,19 @@ std::string magrit::utils::config::get_repo_remote_name ()
 {
   try
   {
-    return
+    auto remote =
       utils::process::git_single_output_line
       (
         std::vector < std::string > { "config", "--get", "magrit.remote" },
-        true
+        true, true
       );
+
+    if ( remote.size() == 0 )
+    {
+      return "magrit";
+    }
+
+    return remote;
   }
   catch (...)
   {
@@ -151,6 +159,7 @@ std::string magrit::utils::config::get_magrit_url ()
     = utils::process::git_single_output_line
       ( 
         std::vector < std::string > { "config", "--local", var },
+        false,
         false
       );
 
@@ -695,7 +704,7 @@ void magrit::utils::git::check_sanity ()
 
 /////////////////////////////////////////////////////////////////////////
 std::string magrit::utils::git::rev_parse
-  ( const std::vector< std::string >& arguments )
+  ( const std::vector< std::string >& arguments, bool dryrun )
 {
 
   std::vector < std::string > all_arguments
@@ -709,7 +718,8 @@ std::string magrit::utils::git::rev_parse
     utils::process::git_single_output_line
     ( 
       all_arguments,
-      true
+      true,
+      dryrun
     );
 }
 

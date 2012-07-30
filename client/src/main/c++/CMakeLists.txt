@@ -83,7 +83,7 @@ set ( CPACK_GENERATOR "ZIP;RPM" )
 # CMake scripts path
 set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/conf/ )
 set ( CMAKE_CXX_FLAGS
-      "-std=c++0x -pedantic -Wall -Werror -Wconversion -Wextra -Wno-unused -s -I${CMAKE_CURRENT_SOURCE_DIR}" )
+      "-std=c++0x -pedantic -Wall -Werror -Wconversion -Wextra -Wno-unused -I${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CXX_FLAGS}" )
 add_definitions ( -DMAGRIT_VERSION=${MAGRIT_VERSION} )
 set ( CMAKE_INSTALL_RPATH "\$ORIGIN" )
 # -------------------------------------------------------------------

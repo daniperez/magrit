@@ -53,25 +53,79 @@ struct MyConfig
     }
 };
 
+#include <unistd.h>
+
+/////////////////////////////////////////////////////////////////////////
+int save_output ()
+{
+  return dup ( STDOUT_FILENO );
+}
+
+/////////////////////////////////////////////////////////////////////////
+std::string get_output ( int handle )
+{
+  int res = -1;
+  std::string output;
+  const short buf_size = 256;
+  char buf [ buf_size ];
+
+  while ( ( res = read ( handle, buf, buf_size ) ) > 0 )
+  {
+    output.append ( buf, buf_size );
+  }
+  std::cerr << "Returning ===============> " << output << std::endl;
+
+  if ( res < 0 )
+  {
+    throw std::runtime_error 
+      (std::string("Error getting the output of a test: ")+strerror(errno));
+  }
+
+  res = close ( handle );
+
+  if ( res < 0 )
+  {
+    throw std::runtime_error 
+      (std::string("Error closing test's output copy: ")+strerror(errno));
+  }
+
+
+  return output;
+}
+
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 BOOST_GLOBAL_FIXTURE( MyConfig )
-
 BOOST_AUTO_TEST_SUITE( MainTestSuite )
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( SanityCheck01 )
 {
   BOOST_CHECK( 1 == (2-1) );
 }
 
+/////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( CheckBuildCat )
 {
+  //auto handle = save_output ();
+
   magrit::build_cat cmd ( nullptr );
 
-  std::vector<std::string> args;
+  std::vector<std::string> args = {"--dryrun"};
 
   cmd.run ( args ); 
+
+  //std::string output = get_output ( handle );
 
   BOOST_CHECK( false );
 }
 
+
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 

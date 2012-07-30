@@ -25,6 +25,13 @@
 #include <iomanip>
 /////////////////////////////////////////////////////////////////////////
 
+namespace magrit
+{
+  struct success 
+  {
+  };
+}
+
 /////////////////////////////////////////////////////////////////////////
 magrit::generic_command::generic_command
 ( 
@@ -76,7 +83,13 @@ magrit::generic_command::run
     const std::vector<std::string>
       tail_arguments ( ++arguments.begin(), arguments.end() );
 
-    run_impl ( tail_arguments, vm );
+    try
+    {
+      run_impl ( tail_arguments, vm );
+    }
+    catch ( success& )
+    {
+    }
   }
 }
 

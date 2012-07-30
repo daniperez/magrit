@@ -138,6 +138,7 @@ magrit::config_add::add_config
    bp_silent(),
    bp_inherit(),
    [&] ( const std::string& line ){},
+   true,
    true 
  );
 }

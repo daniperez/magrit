@@ -74,11 +74,7 @@ int main ( int argc, char** argv )
     ma.run ( arguments );
 
     return 0;
-  }
-  catch ( const magrit::success& e )
-  {
-    return 0;
-  }
+  } 
   catch ( const magrit::option_not_recognized& e )
   {
     std::cerr << magrit::utils::color::error ( "Error:", ma.color ) 
