@@ -151,7 +151,8 @@ magrit::log::get_status
     rev_args, 
     build_status_command,
     func,
-    color
+    color,
+    dryrun 
   );
 }
 

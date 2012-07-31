@@ -127,7 +127,7 @@ std::string magrit::utils::config::get_repo_remote_name ()
       utils::process::git_single_output_line
       (
         std::vector < std::string > { "config", "--get", "magrit.remote" },
-        true, true
+        true
       );
 
     if ( remote.size() == 0 )
@@ -570,7 +570,7 @@ magrit::utils::process::send_command
     )
   );
 
-  boost::process::children statuses = launch_pipeline ( pipeline );
+  boost::process::children statuses = launch_pipeline ( pipeline, dryrun );
 
   // We issue again a git log. For every line, we print the status
   // previously fetched from server. Note: it's theoretically possible
@@ -591,7 +591,7 @@ magrit::utils::process::send_command
       std::getline( statuses.back().get_stdout(), status );
       func ( line, status );
     },
-    true
+    true, dryrun
   );
 }
 

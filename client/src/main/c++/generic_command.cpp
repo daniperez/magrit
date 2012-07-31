@@ -38,7 +38,8 @@ magrit::generic_command::generic_command
   generic_command* previous_subcommand,
   bool allow_positional
 )
-  : debug(true), color(true), _options ( "Main options" ), _previous_subcommand ( previous_subcommand ),
+  : dryrun(false), debug(true), color(true), _options ( "Main options" ),
+    _previous_subcommand ( previous_subcommand ),
     _allow_positional ( allow_positional )
 {
   namespace bpo = boost::program_options;
@@ -63,8 +64,8 @@ magrit::generic_command::generic_command
     (
       "dryrun,y", 
       boost::program_options::value<bool>( &dryrun )
-        ->implicit_value ( false )
-        ->default_value ( false ),
+        ->implicit_value ( true )
+        ->default_value ( true ),
       "doesn't do any action. Prints the command to be sent to server."
     );
 }

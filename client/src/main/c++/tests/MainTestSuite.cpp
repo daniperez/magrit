@@ -29,6 +29,7 @@
 /////////////////////////////////////////////////////////////////////////
 // MAGRIT 
 #include "build_cat.hpp"
+#include "build_log.hpp"
 /////////////////////////////////////////////////////////////////////////
 
 // This can be set at runtime:
@@ -36,9 +37,9 @@
 // e.g.: ./TestSuite --output_format=XML --report_level=detailed
 //                   --show_progress=yes
 //
-struct MyConfig
+struct my_config
 {
-    MyConfig()
+    my_config()
     {
         boost::unit_test::unit_test_log.set_threshold_level
         (
@@ -48,7 +49,7 @@ struct MyConfig
         boost::unit_test::unit_test_log.set_format( boost::unit_test::CLF );
     }
 
-    ~MyConfig()
+    ~my_config()
     {
     }
 };
@@ -94,34 +95,79 @@ std::string get_output ( int handle )
 }
 
 /////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-BOOST_GLOBAL_FIXTURE( MyConfig )
-BOOST_AUTO_TEST_SUITE( MainTestSuite )
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE( SanityCheck01 )
-{
-  BOOST_CHECK( 1 == (2-1) );
-}
-
-/////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE( CheckBuildCat )
+void check_command
+( 
+  const magrit::generic_command& cmd,
+  const std::vector<std::string>& args, 
+  const std::vector<std::string>& expected_output 
+)
 {
   //auto handle = save_output ();
-
-  magrit::build_cat cmd ( nullptr );
-
-  std::vector<std::string> args = {"--dryrun"};
 
   cmd.run ( args ); 
 
   //std::string output = get_output ( handle );
 
-  BOOST_CHECK( false );
+  /*
+  check_contains 
+  ( 
+    output,
+    expected_output 
+  );
+  */
 }
 
+/////////////////////////////////////////////////////////////////////////
+void check_contains
+  ( const std::string& str, const std::vector<std::string>& exprs )
+{
+}
+
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+BOOST_GLOBAL_FIXTURE( my_config )
+BOOST_AUTO_TEST_SUITE( main_test_suite )
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( sanity_check_01 )
+{
+  BOOST_CHECK( 1 == (2-1) );
+}
+
+/////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( check_magrit_build_cat )
+{
+  magrit::build_cat cmd ( nullptr );
+  
+  std::vector<std::string> args = {"--dryrun"};
+
+  std::vector<std::string> expected =
+  {
+      "git rev-parse --verify HEAD",
+      "ssh -x -p 2022 git@remote.magrit.url magrit cat-build /foo/ d53f7bfafb209e1104ce26c4cf6d4116af96e2df"
+  };
+
+  check_command ( cmd, args, expected );
+}
+
+/////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( check_magrit_build_log )
+{
+  magrit::log cmd ( nullptr );
+  
+  std::vector<std::string> args = {"--dryrun"};
+
+  std::vector<std::string> expected =
+  {
+    "git log --format=%H",
+    "ssh -x -p 2022 git@remote.magrit.url magrit status /foo/ -",
+    "git log --color=always --oneline -z"
+  };
+
+  check_command ( cmd, args, expected );
+}
 
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
